@@ -39,9 +39,7 @@ public class AdminBookCopiesServlet extends HttpServlet {
         }
 
         String action = request.getParameter("action");
-        if(action == null) {
-            action = "";
-        }
+        if(action == null) action = "";
 
         try{
             switch (action) {

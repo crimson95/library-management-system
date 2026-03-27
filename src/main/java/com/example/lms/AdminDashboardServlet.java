@@ -19,6 +19,7 @@ import java.io.IOException;
 @WebServlet("/admin")
 public class AdminDashboardServlet extends HttpServlet {
 
+    /** Service used to retrieve dashboard summary metrics. */
     private final BookService bookService = new BookService();
 
     /**
@@ -28,6 +29,7 @@ public class AdminDashboardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 
         try{
+            // Prepare KPI values for dashboard summary cards.
             request.setAttribute("totalBooks", bookService.getTotalBooksCount());
             request.setAttribute("availableCopies", bookService.getAvailableCopiesCount());
             request.setAttribute("borrowedCopies", bookService.getBorrowedCopiesCount());

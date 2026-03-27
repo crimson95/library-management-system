@@ -13,4 +13,33 @@ public interface AuthorDAO {
      * @return list of authors
      */
     List<AuthorDTO> findAllAuthors();
+
+    /**
+     * Returns one author by ID.
+     *
+     * @param authorID author primary key
+     * @return matching author or null when not found
+     */
+    AuthorDTO findAuthorByID(int authorID);
+
+    /**
+     * Inserts a new author.
+     *
+     * @param author author payload
+     */
+    void addAuthor(AuthorDTO author);
+
+    /**
+     * Updates an existing author.
+     *
+     * @param author author payload with existing ID
+     */
+    void updateAuthor(AuthorDTO author);
+
+    /**
+     * Deletes an author by ID.
+     *
+     * @param authorID author primary key
+     */
+    void deleteAuthor(int authorID);
 }

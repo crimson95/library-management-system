@@ -40,10 +40,12 @@
     <div class="card">
         <h2>Add Books</h2>
 
-        <%-- Show server-side validation error if present --%>
-        <% String error = (String) request.getAttribute("error"); %>
-        <% if (error != null) { %>
-        <div class="error"><%= error %></div>
+        <%-- Show validation/business error from servlet --%>
+        <% String error = (String) request.getAttribute("error");
+            if(error != null) { %>
+        <%-- Inline alert + banner both show the same server-side message --%>
+        <script>alert('<%= error %>');</script>
+        <div class="error"> <%= error %></div>
         <% } %>
 
         <%-- Add-book form: submits to AdminBooksServlet (POST + action=add-book) --%>

@@ -166,9 +166,7 @@ public class AdminBooksServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         String action = request.getParameter("action");
-        if (action == null) {
-            action = "";
-        }
+        if (action == null) action = "";
 
         // Block access for unauthenticated/non-admin users.
         if(requireAdmin(request, response) == null) return;

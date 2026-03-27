@@ -43,9 +43,11 @@
     <h2>Edit Book Information</h2>
 
     <%-- Show validation/business error from servlet --%>
-    <% String error = (String) request.getAttribute("error"); %>
-    <% if (error != null) { %>
-    <div class="error"><%= error %>></div>
+    <% String error = (String) request.getAttribute("error");
+      if(error != null) { %>
+    <%-- Inline alert + banner both show the same server-side message --%>
+    <script>alert('<%= error %>');</script>
+    <div class="error"> <%= error %></div>
     <% } %>
 
     <%-- Book object loaded by servlet for pre-filling the form --%>

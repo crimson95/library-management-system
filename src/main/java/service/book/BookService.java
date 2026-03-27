@@ -210,6 +210,59 @@ public class BookService {
     }
 
     /**
+     * Finds one author by ID after basic validation.
+     *
+     * @param authorID unique identifier of an author
+     * @return matched author
+     * @throws BusinessValidationException when author ID is invalid
+     */
+    public AuthorDTO findAuthorByID(int authorID) throws BusinessValidationException {
+        if (authorID <= 0) {
+            throw new BusinessValidationException("Invalid Author ID");
+        }
+        return authorDAO.findAuthorByID(authorID);
+    }
+
+    /**
+     * Creates a new author record.
+     *
+     * @param author new author payload
+     * @throws BusinessValidationException when required fields are invalid
+     */
+    public void addAuthor(AuthorDTO author) throws BusinessValidationException {
+        if (author == null || isBlank(author.getFirst_name()) || isBlank(author.getLast_name())) {
+            throw new BusinessValidationException("Author first name and last name cannot be empty");
+        }
+        authorDAO.addAuthor(author);
+    }
+
+    /**
+     * Updates an existing author record.
+     *
+     * @param author author payload with existing ID
+     * @throws BusinessValidationException when required fields are invalid
+     */
+    public void updateAuthor(AuthorDTO author) throws BusinessValidationException {
+        if (author == null || isBlank(author.getFirst_name()) || isBlank(author.getLast_name())) {
+            throw new BusinessValidationException("Author first name and last name cannot be empty");
+        }
+        authorDAO.updateAuthor(author);
+    }
+
+    /**
+     * Deletes an author by ID.
+     *
+     * @param authorID unique identifier of an author
+     * @throws BusinessValidationException when author ID is invalid
+     */
+    public void deleteAuthor(int authorID) throws BusinessValidationException {
+        if (authorID <= 0) {
+            throw new BusinessValidationException("Invalid Author ID");
+        }
+        authorDAO.deleteAuthor(authorID);
+    }
+
+    /**
      * Returns all publishers for form dropdown options.
      *
      * @return publisher list sorted by DAO query
@@ -218,18 +271,83 @@ public class BookService {
         return publisherDAO.findAllPublishers();
     }
 
+    /**
+     * Finds one publisher by ID after basic validation.
+     *
+     * @param publisherID unique identifier of a publisher
+     * @return matched publisher
+     * @throws BusinessValidationException when publisher ID is invalid
+     */
+    public PublisherDTO findPublisherByID(int publisherID) throws BusinessValidationException {
+        if (publisherID <= 0) {
+            throw new BusinessValidationException("Invalid Publisher ID");
+        }
+        return publisherDAO.findPublisherByID(publisherID);
+    }
+
+    /**
+     * Creates a new publisher record.
+     *
+     * @param publisher new publisher payload
+     * @throws BusinessValidationException when required fields are invalid
+     */
+    public void addPublisher(PublisherDTO publisher) throws BusinessValidationException {
+        if (publisher == null || isBlank(publisher.getPublisherName())) {
+            throw new BusinessValidationException("Publisher name cannot be empty");
+        }
+        publisherDAO.addPublisher(publisher);
+    }
+
+    /**
+     * Updates an existing publisher record.
+     *
+     * @param publisher publisher payload with existing ID
+     * @throws BusinessValidationException when required fields are invalid
+     */
+    public void updatePublisher(PublisherDTO publisher) throws BusinessValidationException {
+        if (publisher == null || isBlank(publisher.getPublisherName())) {
+            throw new BusinessValidationException("Publisher name cannot be empty");
+        }
+        publisherDAO.updatePublisher(publisher);
+    }
+
+    /**
+     * Deletes a publisher by ID.
+     *
+     * @param publisherID unique identifier of a publisher
+     * @throws BusinessValidationException when publisher ID is invalid
+     */
+    public void deletePublisher(int publisherID) throws BusinessValidationException {
+        if (publisherID <= 0) {
+            throw new BusinessValidationException("Invalid Publisher ID");
+        }
+        publisherDAO.deletePublisher(publisherID);
+    }
+
+    /**
+     * Returns total number of physical book copies.
+     */
     public int getTotalBooksCount() {
         return bookInfoDAO.countTotalCopies();
     }
 
+    /**
+     * Returns number of copies currently available to borrow.
+     */
     public int getAvailableCopiesCount() {
         return bookInfoDAO.countCopiesByStatus(BookInfoDTO.STATUS_AVAILABLE);
     }
 
+    /**
+     * Returns number of copies currently marked as borrowed.
+     */
     public int getBorrowedCopiesCount(){
         return bookInfoDAO.countCopiesByStatus(BookInfoDTO.STATUS_BORROWED);
     }
 
+    /**
+     * Returns number of overdue active borrow records.
+     */
     public int getOverdueCopiesCount(){
         return bookUserDAO.countOverdueRecords();
     }

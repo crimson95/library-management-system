@@ -16,15 +16,15 @@
     <meta charset="utf-8">
     <title>Add Book Copy</title>
     <style>
-    body { font-family: Arial, sans-serif; margin: 40px; }
-    .navbar { background: #2c3e50; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-    .container { padding: 30px; display: flex; align-items: center; justify-content: center; }
-    .card { width: 100%; max-width: 500px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-    h2 { color: red; display: block; text-align: center; }
-    p { color: #666; margin-top: 5px; }
-    select { width: 100%; padding: 8px; }
-    .btn { background: red; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; }
-    .btn-secondary { background: #333; }
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .navbar { background: #2c3e50; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .container { padding: 30px; display: flex; align-items: center; justify-content: center; }
+        .card { width: 100%; max-width: 500px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        h2 { color: red; display: block; text-align: center; }
+        p { color: #666; margin-top: 5px; }
+        select { width: 100%; padding: 8px; }
+        .btn { background: red; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; }
+        .btn-secondary { background: #333; }
     </style>
 </head>
 <body>
@@ -37,9 +37,11 @@
     <% BookDTO book = (BookDTO) request.getAttribute("book"); %>
 
     <%-- Show validation/business error from servlet --%>
-    <% String error = (String) request.getAttribute("error"); %>
-    <% if (error != null) { %>
-    <div class="error"><%= error %>></div>
+    <% String error = (String) request.getAttribute("error");
+        if(error != null) { %>
+    <%-- Inline alert + banner both show the same server-side message --%>
+    <script>alert('<%= error %>');</script>
+    <div class="error"> <%= error %></div>
     <% } %>
 
     <div class="card">

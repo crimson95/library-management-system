@@ -29,12 +29,7 @@
         table th { background: #f8f9fa; color: #333; }
 
         .action-group { display: flex; gap: 5px; align-items: center; flex-wrap: nowrap }
-        .action-group .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            white-space: nowrap;
-        }
+        .action-group .btn { display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
         .btn { background: red; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; }
         .btn-add { background: #27ae60; }
         .btn-edit { background: #2980b9; margin-right: 5px; }
@@ -66,16 +61,15 @@
                     <a href="${pageContext.request.contextPath}/admin" class="btn">Back to Dashboard</a>
                 </div>
             </div>
-        <%
-            // Error is set by servlet when validation/business rule fails.
-            String error = (String) request.getAttribute("error");
-            if(error != null) { %>
+
+        <%-- Show validation/business error from servlet --%>
+        <% String error = (String) request.getAttribute("error");
+        if(error != null) { %>
         <%-- Inline alert + banner both show the same server-side message --%>
         <script>alert('<%= error %>');</script>
-        <div class="error">
-            <%= error %>
-        </div>
-        <%  } %>
+        <div class="error"> <%= error %></div>
+        <% } %>
+
             <%-- Book list table --%>
             <table>
                 <thead>

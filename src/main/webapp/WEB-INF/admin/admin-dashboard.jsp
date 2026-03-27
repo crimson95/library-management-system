@@ -1,9 +1,7 @@
 <%--
-  Created by IntelliJ IDEA.
-  User: cchao
-  Date: 2026-03-05
-  Time: 15:40
-  To change this template use File | Settings | File Templates.
+  Admin dashboard view.
+  Expects request attributes from AdminDashboardServlet:
+  totalBooks, availableCopies, borrowedCopies, overdueRecords.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>

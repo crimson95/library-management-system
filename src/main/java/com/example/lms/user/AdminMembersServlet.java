@@ -39,9 +39,7 @@ public class AdminMembersServlet extends HttpServlet {
 
         // Action selector; empty means "show list page".
         String action = request.getParameter("action");
-        if (action == null) {
-            action = "";
-        }
+        if (action == null) action = "";
 
         // Logged-in user from session, used for access/safety checks.
         UserDTO currentUser = null;
