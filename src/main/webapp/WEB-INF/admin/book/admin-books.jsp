@@ -55,6 +55,8 @@
                 </form>
                 <div>
                     <a href="${pageContext.request.contextPath}/admin/books?action=add-book" class="btn btn-add">Add New Book</a>
+                    <a href="${pageContext.request.contextPath}/admin/authors" class="btn" style="background: #8e44ad;">Manage Authors</a>
+                    <a href="${pageContext.request.contextPath}/admin/publishers" class="btn" style="background: #f39c12;">Manage Publisher</a>
                     <a href="${pageContext.request.contextPath}/admin" class="btn">Back to Dashboard</a>
                 </div>
             </div>

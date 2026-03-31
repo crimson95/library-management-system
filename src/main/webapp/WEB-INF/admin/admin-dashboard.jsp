@@ -29,13 +29,15 @@
       <div class="actions">
           <a class="btn" href="${pageContext.request.contextPath}/admin/books">Manage Books</a>
           <a class="btn" href="${pageContext.request.contextPath}/admin/members">Manage Members</a>
+          <a class="btn" href="${pageContext.request.contextPath}/admin/authors">Manage Authors</a>
+          <a class="btn" href="${pageContext.request.contextPath}/admin/publishers">Manage Publishers</a>
       </div>
       <div class="logout">
           <a class="btn" href="${pageContext.request.contextPath}/logout">Logout</a>
       </div>
   </nav>
 
-  <%-- Placeholder summary cards: wire these with real statistics later --%>
+  <%-- Summary cards --%>
   <div class="section">
       <h2>Summary</h2>
       <div class="grid cards">
@@ -52,6 +54,8 @@
       <div class="actions">
           <a class="btn secondary" href="${pageContext.request.contextPath}/admin/books?action=add-book">Add New Book</a>
           <a class="btn secondary" href="${pageContext.request.contextPath}/admin/members?action=add-admin">Add Admin User</a>
+          <a class="btn secondary" href="${pageContext.request.contextPath}/admin/authors?action=add">Add New Author</a>
+          <a class="btn secondary" href="${pageContext.request.contextPath}/admin/publishers?action=add">Add New Publisher</a>
       </div>
   </div>
 </body>
