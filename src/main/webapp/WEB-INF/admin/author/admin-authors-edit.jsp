@@ -41,10 +41,10 @@
 
         <%-- Show validation/business error from servlet --%>
         <% String error = (String) request.getAttribute("error");
-            if(error != null) { %>
+        if(error != null) { %>
         <%-- Inline alert + banner both show the same server-side message --%>
-        <script>alert('<%= error %>');</script>
-        <div class="error"> <%= error %></div>
+            <script>alert('<%= error %>');</script>
+            <div class="error"> <%= error %></div>
         <% } %>
 
         <%-- Author object loaded by servlet for pre-filling the form --%>

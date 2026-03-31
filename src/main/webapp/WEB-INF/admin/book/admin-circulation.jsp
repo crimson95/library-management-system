@@ -57,10 +57,10 @@
 
     <%-- Show validation/business error from servlet --%>
     <% String error = (String) request.getAttribute("error");
-        if(error != null) { %>
+    if(error != null) { %>
     <%-- Inline alert + banner both show the same server-side message --%>
-    <script>alert('<%= error %>');</script>
-    <div class="error"> <%= error %></div>
+        <script>alert('<%= error %>');</script>
+        <div class="error"> <%= error %></div>
     <% } %>
 
     <%-- Section 1: Borrow Book Form --%>
@@ -71,11 +71,11 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="username">Reader Username</label>
-                    <input type="text" id="username" name="username" placeholder="enter username" required>
+                    <input type="text" id="username" name="username" placeholder="enter username">
                 </div>
                 <div class="form-group">
                     <label for="bookID">Physical Copy ID</label>
-                    <input type="number" id="bookID" name="bookID" placeholder="enter bookID" required>
+                    <input type="number" id="bookID" name="bookID" placeholder="enter bookID">
                 </div>
                 <button type="submit" class="btn btn-borrow">Process Checkout</button>
             </div>

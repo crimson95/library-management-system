@@ -60,9 +60,7 @@
             String error = (String) request.getAttribute("error");
             if(error != null) { %>
                 <script>alert('<%= error %>');</script>
-                <div class="error">
-                    <%= error %>
-                </div>
+                <div class="error"><%= error %></div>
         <%  } %>
             <%-- User list table --%>
             <table>

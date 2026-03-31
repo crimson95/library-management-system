@@ -38,12 +38,12 @@
         <h2>Add Author</h2>
 
         <%-- Show validation/business error from servlet --%>
-            <% String error = (String) request.getAttribute("error");
-            if(error != null) { %>
+        <% String error = (String) request.getAttribute("error");
+        if(error != null) { %>
         <%-- Inline alert + banner both show the same server-side message --%>
-        <script>alert('<%= error %>');</script>
-        <div class="error"> <%= error %></div>
-            <% } %>
+            <script>alert('<%= error %>');</script>
+            <div class="error"> <%= error %></div>
+        <% } %>
 
         <%-- Add-author form: submits to AdminAuthorsServlet (POST + action=add) --%>
         <form method="post" action="${pageContext.request.contextPath}/admin/authors">

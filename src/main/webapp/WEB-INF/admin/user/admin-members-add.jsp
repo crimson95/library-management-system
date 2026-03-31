@@ -38,9 +38,11 @@
             <h2>Add Admin User</h2>
 
             <%-- Show server-side validation error if present --%>
-            <% String error = (String) request.getAttribute("error"); %>
-            <% if (error != null) { %>
-                <div class="error"><%= error %></div>
+            <% String error = (String) request.getAttribute("error");
+            if (error != null) { %>
+            <%-- Inline alert + banner both show the same server-side message --%>
+                <script>alert('<%= error %>');</script>
+                <div class="error"> <%= error %></div>
             <% } %>
 
             <%-- Add-admin form: submits to AdminMembersServlet (POST + action=add-admin) --%>
