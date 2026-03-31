@@ -1,12 +1,10 @@
 package service.book;
 
 import DAO.book.*;
-import DTO.book.AuthorDTO;
-import DTO.book.BookDTO;
-import DTO.book.BookInfoDTO;
-import DTO.book.PublisherDTO;
+import DTO.book.*;
 import service.BusinessValidationException;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -374,7 +372,6 @@ public class BookService {
         if (isBlank(bookDTO.getDescription())){
             throw new BusinessValidationException("Date acquired is required");
         }
-
     }
 
     /**
@@ -382,5 +379,92 @@ public class BookService {
      */
     private boolean isBlank(String value){
         return value == null || value.trim().isEmpty();
+    }
+
+    /**
+     * Processes a book borrowing transaction.
+     *
+     * @param username the username of the member borrowing the book
+     * @param bookID   the ID of the physical book copy being borrowed
+     * @throws BusinessValidationException if the copy is not found or not available
+     */
+    public void borrowBook(String username, int bookID) throws BusinessValidationException {
+        // 1. Check if the physical copy exists and is currently available
+        BookInfoDTO book = bookInfoDAO.getBookInfoByID(bookID);
+        if (book == null) {
+            throw new BusinessValidationException("Cannot find this book (Book ID: " + bookID + ")");
+        }
+        if (book.getStatus() != BookInfoDTO.STATUS_AVAILABLE) {
+            throw new BusinessValidationException("This book is currently not available (Status code: " + book.getStatus() + ")");
+        }
+
+        // 2. Create a new borrowing record (Default borrowing period is 14 days)
+        long millis = System.currentTimeMillis();
+        java.sql.Date startDate = new java.sql.Date(millis);
+
+        // Map to exact BookUserDTO constructor: (bookUserID, startDate, returnDate, lateFee, username, bookID)
+        BookUserDTO record = new BookUserDTO(0, startDate, null, java.math.BigDecimal.ZERO, username, bookID);
+
+        // 3. Action A: Insert the borrowing record into the database
+        bookUserDAO.addBookUser(record);
+
+        // 4. Action B: Update the physical book copy status to "Borrowed" (0)
+        book.setStatus(BookInfoDTO.STATUS_BORROWED);
+        bookInfoDAO.updateBookInfo(book);
+    }
+
+    /**
+     * Processes a book return transaction and calculates potential late fees.
+     *
+     * @param bookUserID the primary key ID of the borrowing record
+     * @throws BusinessValidationException if the record is not found or already returned
+     */
+    public void returnBook(int bookUserID) throws BusinessValidationException {
+        // 1. Find the existing borrowing record
+        BookUserDTO record = bookUserDAO.getBookUserByID(bookUserID);
+        if(record == null) {
+            throw new BusinessValidationException("Cannot find the borrowing record (Record ID: " + bookUserID + ")");
+        }
+        if(record.getReturnDate() != null) {
+            throw new BusinessValidationException("This book has already been returned");
+        }
+
+        // 2. Set the actual return date to today using java.time.LocalDate
+        java.time.LocalDate today = java.time.LocalDate.now();
+        record.setReturnDate(java.sql.Date.valueOf(today));
+
+        // 3. Late Fee Calculation Logic
+        // Convert SQL Date to LocalDate for easier math operations
+        java.time.LocalDate startDate = record.getStartDate().toLocalDate();
+
+        // Define library rules: 14 days borrowing period, $1.50 per overdue day
+        java.time.LocalDate dueDate = startDate.plusDays(14);
+        long overdueDays = java.time.temporal.ChronoUnit.DAYS.between(dueDate, today);
+
+        java.math.BigDecimal lateFee = java.math.BigDecimal.ZERO;
+        if(overdueDays > 0) {
+            java.math.BigDecimal dailyRate = new java.math.BigDecimal("1.50");
+            lateFee = new java.math.BigDecimal(overdueDays).multiply(dailyRate);
+        }
+        record.setLateFee(lateFee);
+
+        // 4. Update the borrowing record in the database
+        bookUserDAO.updateBookUser(record);
+
+        // 5. Find the physical book copy and update its status back to "Available" (1)
+        BookInfoDTO book = bookInfoDAO.getBookInfoByID(record.getBookID());
+        if(book != null){
+            book.setStatus(BookInfoDTO.STATUS_AVAILABLE);
+            bookInfoDAO.updateBookInfo(book);
+        }
+    }
+
+    /**
+     * Retrieves all borrow records for the circulation dashboard.
+     *
+     * @return a list of all BookUserDTO records
+     */
+    public List<BookUserDTO> getAllBorrowRecords(){
+        return bookUserDAO.getAllBookUser();
     }
 }

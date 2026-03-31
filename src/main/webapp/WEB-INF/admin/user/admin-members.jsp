@@ -32,8 +32,6 @@
         .btn-add { background: #27ae60; }
         .btn-edit { background: #2980b9; margin-right: 5px; }
         .btn-delete { background: #c0392b; }
-
-        .status-tag { padding: 4px 8px; border-radius: 12px; font-size: 12px; background: #e0e0e0; }
     </style>
 </head>
 <body>

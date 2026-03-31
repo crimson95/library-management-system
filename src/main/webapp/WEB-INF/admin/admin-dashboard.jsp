@@ -31,6 +31,7 @@
           <a class="btn" href="${pageContext.request.contextPath}/admin/members">Manage Members</a>
           <a class="btn" href="${pageContext.request.contextPath}/admin/authors">Manage Authors</a>
           <a class="btn" href="${pageContext.request.contextPath}/admin/publishers">Manage Publishers</a>
+          <a class="btn" href="${pageContext.request.contextPath}/admin/circulation">Circulation Desk</a>
       </div>
       <div class="logout">
           <a class="btn" href="${pageContext.request.contextPath}/logout">Logout</a>
