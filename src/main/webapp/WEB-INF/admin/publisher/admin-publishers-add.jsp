@@ -51,7 +51,7 @@
 
             <div class="row">
                <label for="publisher">Publisher Name</label>
-                <input type="text" name="publisher" id="publisher" maxlength="30" placeholder="Enter Publisher" />
+                <input type="text" name="publisher_name" id="publisher_name" maxlength="30" placeholder="Enter Publisher" />
             </div>
 
             <div class="btn-row">

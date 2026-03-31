@@ -41,7 +41,7 @@ public class AdminAuthorsServlet extends HttpServlet {
                 case "update":{
                     // Load selected author for edit form.
                     String authorIDRaw = request.getParameter("authorID");
-                    if (authorIDRaw == null) {
+                    if (authorIDRaw != null) {
                         int authorID = Integer.parseInt(authorIDRaw);
                         AuthorDTO author = bookService.findAuthorByID(authorID);
                         request.setAttribute("author", author);
@@ -55,7 +55,7 @@ public class AdminAuthorsServlet extends HttpServlet {
                 case "delete":{
                     // Execute delete and return to list page.
                     String deleteIDRaw = request.getParameter("authorID");
-                    if (deleteIDRaw == null){
+                    if (deleteIDRaw != null){
                         bookService.deleteAuthor(Integer.parseInt(deleteIDRaw));
                     }
                     response.sendRedirect(request.getContextPath() + "/admin/authors");
@@ -72,7 +72,7 @@ public class AdminAuthorsServlet extends HttpServlet {
             }
         }catch (BusinessValidationException e){
             request.setAttribute("error", e.getMessage());
-            request.getRequestDispatcher("/WEB-INF/admin/book/admin-authors.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/admin/author/admin-authors.jsp").forward(request, response);
         }catch (Exception e){
             e.printStackTrace();
             request.setAttribute("error", "System error or this author has existing books.");

@@ -44,7 +44,7 @@ public class AdminPublishersServlet extends HttpServlet {
                 case "update":{
                     // Load selected publisher for edit form.
                     String publisherIDRaw = request.getParameter("publisherID");
-                    if (publisherIDRaw == null) {
+                    if (publisherIDRaw != null) {
                         int publisherID = Integer.parseInt(publisherIDRaw);
                         PublisherDTO publisher = bookService.findPublisherByID(publisherID);
                         request.setAttribute("publisher", publisher);
@@ -58,7 +58,7 @@ public class AdminPublishersServlet extends HttpServlet {
                 case "delete":{
                     // Execute delete and return to list page.
                     String deleteIDRaw = request.getParameter("publisherID");
-                    if (deleteIDRaw == null) {
+                    if (deleteIDRaw != null) {
                         bookService.deletePublisher(Integer.parseInt(deleteIDRaw));
                     }
                     response.sendRedirect(request.getContextPath() + "/admin/publishers");
