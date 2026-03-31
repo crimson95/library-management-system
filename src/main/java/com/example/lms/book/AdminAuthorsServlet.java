@@ -35,7 +35,7 @@ public class AdminAuthorsServlet extends HttpServlet {
             switch (action){
                 case "add":{
                     // Open add form.
-                    request.getRequestDispatcher("/WEB-INF/admin/author/admin-author-add.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/admin/author/admin-authors-add.jsp").forward(request, response);
                     return;
                 }
                 case "update":{
@@ -45,7 +45,7 @@ public class AdminAuthorsServlet extends HttpServlet {
                         int authorID = Integer.parseInt(authorIDRaw);
                         AuthorDTO author = bookService.findAuthorByID(authorID);
                         request.setAttribute("author", author);
-                        request.getRequestDispatcher("/WEB-INF/admin/author/admin-author-edit.jsp").forward(request,response);
+                        request.getRequestDispatcher("/WEB-INF/admin/author/admin-authors-edit.jsp").forward(request,response);
                     }else{
                         response.sendRedirect(request.getContextPath() + "/admin/authors");
                     }
@@ -66,7 +66,7 @@ public class AdminAuthorsServlet extends HttpServlet {
                     // Default page: author listing.
                     List<AuthorDTO> authors = bookService.findAllAuthors();
                     request.setAttribute("authorList", authors);
-                    request.getRequestDispatcher("/WEB-INF/admin/author/admin-author.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/admin/author/admin-authors.jsp").forward(request, response);
                     break;
                 }
             }
@@ -77,7 +77,7 @@ public class AdminAuthorsServlet extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("error", "System error or this author has existing books.");
             request.setAttribute("authorList", bookService.findAllAuthors());
-            request.getRequestDispatcher("/WEB-INF/admin/author/admin-author.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/admin/author/admin-authors.jsp").forward(request, response);
         }
     }
 
@@ -122,7 +122,7 @@ public class AdminAuthorsServlet extends HttpServlet {
                 }catch (BusinessValidationException e){
                     request.setAttribute("error", e.getMessage());
                     request.setAttribute("author", new AuthorDTO(Integer.parseInt(authorIDRaw), firstName, lastName));
-                    request.getRequestDispatcher("/WEB-INF/admin/author/admin-author-edit.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/admin/author/admin-authors-edit.jsp").forward(request, response);
                     return;
                 }
             }

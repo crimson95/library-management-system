@@ -79,7 +79,7 @@
             </div>
 
             <div class="btn-row" style="margin-top: 20px;">
-                <button class="btn" type="submit">Update Copy</button>
+                <button class="btn" type="submit">Confirm update</button>
                 <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/book-copies?isbn=<%= book != null ? book.getIsbn() : "" %>">Cancel</a>
             </div>
         </form>

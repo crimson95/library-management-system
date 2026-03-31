@@ -49,7 +49,7 @@ public class AdminBookCopiesServlet extends HttpServlet {
                     String addIsbn = request.getParameter("isbn");
                     BookDTO targetBook = bookService.findByISBN(addIsbn);
                     request.setAttribute("book", targetBook);
-                    request.getRequestDispatcher("/WEB-INF/admin/book/admin-book-copies-add.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/admin/copy/admin-book-copies-add.jsp").forward(request, response);
                     return;
                 }
 
@@ -63,7 +63,7 @@ public class AdminBookCopiesServlet extends HttpServlet {
                         BookInfoDTO updateCopy = bookService.findCopyByID(Integer.parseInt(updateCopyIDRaw));
                         request.setAttribute("book", updateBook);
                         request.setAttribute("copy", updateCopy);
-                        request.getRequestDispatcher("/WEB-INF/admin/book/admin-book-copies-edit.jsp").forward(request, response);
+                        request.getRequestDispatcher("/WEB-INF/admin/copy/admin-book-copies-edit.jsp").forward(request, response);
                     }else{
                         response.sendRedirect(request.getContextPath() + "/admin/book-copies?isbn=" + updateIsbn);
                     }
@@ -92,7 +92,7 @@ public class AdminBookCopiesServlet extends HttpServlet {
 
                     request.setAttribute("book", book);
                     request.setAttribute("copiesList", copies);
-                    request.getRequestDispatcher("/WEB-INF/admin/book/admin-book-copies.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/admin/copy/admin-book-copies.jsp").forward(request, response);
                     break;
                 }
             }

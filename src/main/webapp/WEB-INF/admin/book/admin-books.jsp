@@ -14,20 +14,19 @@
     <meta charset="UTF-8">
     <title>Book Management</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f7f6; }
+        body { font-family: Arial, sans-serif; margin: 40px; }
         .navbar { background: #2c3e50; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
         .container { padding: 30px; }
         .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+        .error { background: #ffeaa7; color: #d63031; padding: 15px; border-left: 5px solid #d63031; margin-bottom: 20px; font-weight: bold; border-radius: 4px; }
         .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .search-bar { display: flex; gap: 8px; align-items: center; }
         .search-input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 5px; width: 350px; }
         .btn-search { background: #333; }
         h2 { color: red; }
-
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         table th, table td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
         table th { background: #f8f9fa; color: #333; }
-
         .action-group { display: flex; gap: 5px; align-items: center; flex-wrap: nowrap }
         .action-group .btn { display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
         .btn { background: red; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; }
@@ -35,8 +34,6 @@
         .btn-edit { background: #2980b9; margin-right: 5px; }
         .btn-copy { background: #8e44ad; }
         .btn-delete { background: #c0392b; }
-
-        .status-tag { padding: 4px 8px; border-radius: 12px; font-size: 12px; background: #e0e0e0; }
     </style>
 </head>
 <body>
@@ -113,7 +110,7 @@
                                 String title = book.getTitle();
                                 String safeTitle = title == null ? "" : title.replace("'", "\\'");
                                 // Build inline confirm message and delete URL using ISBN key.
-                                String confirmMsg = "return confirm('Are you sure to delete { " + safeTitle + " } ? (ISBN: " + book.getIsbn() + ")');";
+                                String confirmMsg = "return confirm('Are you sure to delete { " + safeTitle + " }? (ISBN: " + book.getIsbn() + ")');";
                                 String deleteUrl = request.getContextPath() + "/admin/books?action=delete&isbn=" + book.getIsbn();
                             %>
                             <a href="<%= deleteUrl %>" class="btn btn-delete" onclick="<%= confirmMsg %>">Delete</a>

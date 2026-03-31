@@ -28,12 +28,12 @@
     <form method="post" action="${pageContext.request.contextPath}/login">
         <div class="row">
             <label for="username">Username</label>
-            <input id="username" name="username" type="text" required maxlength="20">
+            <input id="username" name="username" type="text" maxlength="20">
         </div>
 
         <div class="row">
             <label for="password">Password</label>
-            <input id="password" name="password" type="password" required maxlength="20">
+            <input id="password" name="password" type="password" maxlength="20">
         </div>
 
         <div class="btn-row">

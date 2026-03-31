@@ -24,11 +24,9 @@
         .search-input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 5px; width: 350px; }
         .btn-search { background: #333; }
         h2 { color: red; }
-
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         table th, table td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
         table th { background: #f8f9fa; color: #333; }
-
         .action-group { display: flex; gap: 5px; align-items: center; flex-wrap: nowrap }
         .btn { background: red; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; }
         .btn-add { background: #27ae60; }
@@ -101,7 +99,7 @@
                             <a href="${pageContext.request.contextPath}/admin/members?action=update&username=<%= user.getUsername() %>" class="btn btn-edit">Edit</a>
                             <%-- Trigger delete flow with simple confirm dialog --%>
                             <a href="${pageContext.request.contextPath}/admin/members?action=delete&username=<%= user.getUsername() %>" class="btn btn-delete"
-                               onclick="return confirm('Are you sure to delete { <%= user.getUsername() %> } ?');">Delete</a>
+                               onclick="return confirm('Are you sure to delete { <%= user.getUsername() %> }?');">Delete</a>
                         </div>
                     </td>
                 </tr>

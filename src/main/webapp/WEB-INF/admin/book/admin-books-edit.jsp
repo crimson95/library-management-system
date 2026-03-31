@@ -114,7 +114,7 @@
 
       <div class="btn-row">
         <%-- Confirm submits update; Cancel returns to list page --%>
-        <button class="btn" type="submit">Confirm</button>
+        <button class="btn" type="submit">Confirm update</button>
         <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/books">Cancel</a>
       </div>
     </form>

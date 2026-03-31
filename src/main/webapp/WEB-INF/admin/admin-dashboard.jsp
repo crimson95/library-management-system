@@ -10,12 +10,12 @@
     <meta charset="utf-8">
     <title>Admin Dashboard</title>
     <style>
-      body { font-family: Arial, sans-serif; margin: 40px; background: #f7f7f7; }
+      body { font-family: Arial, sans-serif; margin: 40px; }
       h1 { color: red; margin-bottom: 16px; }
       .navbar { display: flex; justify-content: space-between; align-items: center; }
       .grid { display: grid; gap: 16px; }
       .cards { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
-      .card { background: #fff; padding: 20px; border: 1px solid #e3e3e3; border-radius: 8px; }
+      .card { background: #ffefef; padding: 20px; border: 1px solid #cacaca; border-radius: 8px; }
       .actions { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
       .btn { display:inline-block; padding: 8px 12px; background: #e40a0a; color: #fff; text-decoration: none; border-radius: 6px; }
       .btn.secondary { background-color: #333; }

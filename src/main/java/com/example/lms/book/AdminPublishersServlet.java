@@ -37,7 +37,7 @@ public class AdminPublishersServlet extends HttpServlet {
             switch (action){
                 case "add":{
                     // Open add form.
-                    request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publisher-add.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publishers-add.jsp").forward(request, response);
                     return;
                 }
 
@@ -47,8 +47,8 @@ public class AdminPublishersServlet extends HttpServlet {
                     if (publisherIDRaw == null) {
                         int publisherID = Integer.parseInt(publisherIDRaw);
                         PublisherDTO publisher = bookService.findPublisherByID(publisherID);
-                        request.getSession().setAttribute("publisher", publisher);
-                        request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publisher-edit.jsp").forward(request, response);
+                        request.setAttribute("publisher", publisher);
+                        request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publishers-edit.jsp").forward(request, response);
                     }else{
                         response.sendRedirect(request.getContextPath() + "/admin/publishers");
                     }
@@ -69,18 +69,18 @@ public class AdminPublishersServlet extends HttpServlet {
                     // Default page: publisher listing.
                     List<PublisherDTO> publishers = bookService.findAllPublishers();
                     request.setAttribute("publisherList", publishers);
-                    request.getRequestDispatcher("WEB-INF/admin/publisher/admin-publisher.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publishers.jsp").forward(request, response);
                     break;
                 }
             }
         }catch (BusinessValidationException e){
             request.setAttribute("error", e.getMessage());
-            request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publisher.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publishers.jsp").forward(request, response);
         }catch (Exception e){
             e.printStackTrace();
             request.setAttribute("error", "System error or this publisher has existing books.");
             request.setAttribute("publisherList", bookService.findAllPublishers());
-            request.getRequestDispatcher("WEB-INF/admin/publisher/admin-publisher.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publishers.jsp").forward(request, response);
         }
     }
 
@@ -123,7 +123,7 @@ public class AdminPublishersServlet extends HttpServlet {
                 }catch (BusinessValidationException e){
                     request.setAttribute("error", e.getMessage());
                     request.setAttribute("publisher", new PublisherDTO(Integer.parseInt(publisherIDRaw), publisherName));
-                    request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publisher-edit.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publishers-edit.jsp").forward(request, response);
                     return;
                 }
             }
