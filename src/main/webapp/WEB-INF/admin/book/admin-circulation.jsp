@@ -14,12 +14,12 @@
     <meta charset="utf-8">
     <title>Circulation Desk</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f7f6; }
-        .navbar { background: #2c3e50; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .navbar { background: #960000; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
         .container { padding: 30px; }
         .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); margin-bottom: 30px; }
         .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        h2 { margin: 0; color: #2c3e50; }
+        h2 { color: red; }
 
         /* Form Styles */
         .form-row { display: flex; gap: 15px; align-items: flex-end; margin-bottom: 15px; }

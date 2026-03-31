@@ -15,7 +15,7 @@
   <title>Manage Publishers</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 40px; }
-    .navbar { background: #2c3e50; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+    .navbar { background: #960000; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
     .container { padding: 30px; }
     .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
     .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }

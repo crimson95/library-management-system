@@ -16,7 +16,7 @@
     <title>Add Books</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
-        .navbar { background: #2c3e50; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar { background: #960000; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
         .container { padding: 30px; display: flex; align-items: center; justify-content: center; }
         .card { width: 100%; max-width: 500px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
         h2 { color: red; display: block; text-align: center; }
