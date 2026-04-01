@@ -14,7 +14,7 @@
     <meta charset="UTF-8">
     <title>Book Management</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
         .navbar { background: #960000; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
         .container { padding: 30px; }
         .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); margin-bottom: 30px; }
@@ -27,8 +27,9 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         table th, table td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
         table th { background: #f8f9fa; color: #333; }
-        .action-group { display: flex; gap: 5px; align-items: center; flex-wrap: nowrap }
-        .action-group .btn { display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
+        .action-group { display: flex; flex-direction: column; gap: 6px; }
+        .action-row {  display: flex; gap: 6px; }
+        .action-row .btn { flex: 1; align-items: center; justify-content: center; }
         .btn { background: red; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; }
         .btn-add { background: #27ae60; }
         .btn-edit { background: #2980b9; margin-right: 5px; }
@@ -73,14 +74,14 @@
             <table>
                 <thead>
                     <tr>
-                        <th>ISBN</th>
-                        <th>Title</th>
-                        <th>Date Acquired</th>
-                        <th>Description</th>
-                        <th>Author</th>
-                        <th>Publisher</th>
-                        <th>Inventory (Avail/Total)</th>
-                        <th>Action</th>
+                        <th style="width: 10%;">ISBN</th>
+                        <th style="width: 20%;">Title</th>
+                        <th style="width: 10%;">Date Acquired</th>
+                        <th style="width: 30%;">Description</th>
+                        <th style="width: 10%;">Author</th>
+                        <th style="width: 5%;">Publisher</th>
+                        <th style="width: 5%;">Inventory (Avail/Total)</th>
+                        <th style="width: 10%;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -105,19 +106,21 @@
                     </td>
                     <td>
                         <div class="action-group">
-                            <%-- Edit action loads edit form with selected ISBN --%>
-                            <a href="${pageContext.request.contextPath}/admin/books?action=update&isbn=<%= book.getIsbn() %>" class="btn btn-edit">Edit</a>
-                            <%
-                                // Escape single quote for JavaScript confirm dialog.
-                                String title = book.getTitle();
-                                String safeTitle = title == null ? "" : title.replace("'", "\\'");
-                                // Build inline confirm message and delete URL using ISBN key.
-                                String confirmMsg = "return confirm('Are you sure to delete { " + safeTitle + " }? (ISBN: " + book.getIsbn() + ")');";
-                                String deleteUrl = request.getContextPath() + "/admin/books?action=delete&isbn=" + book.getIsbn();
-                            %>
-                            <a href="<%= deleteUrl %>" class="btn btn-delete" onclick="<%= confirmMsg %>">Delete</a>
+                            <%-- Top row: Edit and Delete buttons --%>
+                            <div class="action-row">
+                                <a href="${pageContext.request.contextPath}/admin/books?action=update&isbn=<%= book.getIsbn() %>" class="btn btn-edit">Edit</a>
+                                <%
+                                    // Escape single quote for JavaScript confirm dialog.
+                                    String title = book.getTitle();
+                                    String safeTitle = title == null ? "" : title.replace("'", "\\'");
+                                    // Build inline confirm message and delete URL using ISBN key.
+                                    String confirmMsg = "return confirm('Are you sure to delete { " + safeTitle + " }? (ISBN: " + book.getIsbn() + ")');";
+                                    String deleteUrl = request.getContextPath() + "/admin/books?action=delete&isbn=" + book.getIsbn();
+                                %>
+                                <a href="<%= deleteUrl %>" class="btn btn-delete" onclick="<%= confirmMsg %>">Delete</a>
+                            </div>
 
-                            <%-- Manage copies action loads manage form with selected ISBN --%>
+                            <%-- Bottom row: Manage Copies button (Full width) --%>
                             <a href="${pageContext.request.contextPath}/admin/book-copies?isbn=<%= book.getIsbn() %>"
                                class="btn btn-copy">Manage Copies</a>
                         </div>

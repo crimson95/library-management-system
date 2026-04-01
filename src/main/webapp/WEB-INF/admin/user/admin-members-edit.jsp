@@ -13,7 +13,7 @@
     <meta charset="UTF-8">
     <title>Edit User Information</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
         .navbar { background: #960000; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
         .container { padding: 30px; display: flex; align-items: center; justify-content: center; }
         .card { width: 100%; max-width: 500px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
