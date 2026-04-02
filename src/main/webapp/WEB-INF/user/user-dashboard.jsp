@@ -75,9 +75,10 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 35%;">Book Information</th>
+                        <th style="width: 30%;">Book Information</th>
                         <th style="width: 20%;">Author & Publisher</th>
-                        <th style="width: 65%;">Description</th>
+                        <th style="width: 40%;">Description</th>
+                        <th style="width: 10%;">Copy Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -99,6 +100,19 @@
                         <td>
                             <div class="book-desc"><%= book.getDescription() != null ? book.getDescription() : "No description available." %></div>
                         </td>
+                        <td>
+                            <div style="margin-top: 10px;">
+                                <% if(book.getAvailableCopies() > 0){ %>
+                                <span style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                                    Available (<%= book.getAvailableCopies() %>)
+                                </span>
+                                <% }else{ %>
+                                <span style="background: #e74c3c; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                                    Out of Stock
+                                </span>
+                                <% } %>
+                            </div>
+                        </td>
                     </tr>
 
                 <%
@@ -106,7 +120,7 @@
                     } else {
                 %>
                     <tr>
-                        <td colspan="3" style="text-align: center; padding: 50px; color: #7f8c8d;">
+                        <td colspan="4" style="text-align: center; padding: 50px; color: #7f8c8d;">
                             <h3>No books found.</h3>
                             <p>Try adjusting your search keywords.</p>
                         </td>

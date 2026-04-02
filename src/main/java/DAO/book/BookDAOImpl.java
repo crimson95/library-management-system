@@ -19,27 +19,32 @@ import java.util.List;
  * required by admin list screens.
  */
 public class BookDAOImpl implements BookDAO{
-    /** Query for all books with author/publisher names for table display. */
+    /** Query for all books with robust grouping and null-handling for aggregates. */
     private static final String QUERY_BOOK = """
             SELECT b.ISBN, b.title, b.date_acquired, b.description, b.Author_authorID AS authorID,
                    b.Publisher_publisherID AS publisherID, a.first_name AS author_first_name,
                    a.last_name AS author_last_name, p.publisher_name AS publisher_name,
-                   COUNT(bi.bookID) AS total_copies, SUM(CASE WHEN bi.status = 1 THEN 1 ELSE 0 END) AS available_copies
+                   COUNT(bi.bookID) AS total_copies,
+                   COALESCE(SUM(CASE WHEN bi.status = 1 THEN 1 ELSE 0 END), 0) AS available_copies
             FROM Book as b JOIN Author a ON b.Author_authorID = a.authorID
-                JOIN Publisher p ON b.Publisher_publisherID = p.publisherID
-                LEFT JOIN book_info bi ON b.ISBN = bi.Book_ISBN
-            GROUP BY b.ISBN
+            JOIN Publisher p ON b.Publisher_publisherID = p.publisherID
+            LEFT JOIN Book_info bi ON b.ISBN = bi.Book_ISBN
+            GROUP BY b.ISBN, b.title, b.date_acquired, b.description, b.Author_authorID,
+                     b.Publisher_publisherID, a.first_name, a.last_name, p.publisher_name
             ORDER BY b.ISBN DESC""";
-    /** Query for one book by ISBN with joined author/publisher names. */
+    /** Query for one book by ISBN with robust grouping and null-handling. */
     private static final String QUERY_ISBN = """
             SELECT b.ISBN, b.title, b.date_acquired, b.description, b.Author_authorID AS authorID,
                    b.Publisher_publisherID AS publisherID, a.first_name AS author_first_name,
                    a.last_name AS author_last_name, p.publisher_name AS publisher_name,
-                   COUNT(bi.bookID) AS total_copies, SUM(CASE WHEN bi.status = 1 THEN 1 ELSE 0 END) AS available_copies
+                   COUNT(bi.bookID) AS total_copies,
+                   COALESCE(SUM(CASE WHEN bi.status = 1 THEN 1 ELSE 0 END), 0) AS available_copies
             FROM Book AS b JOIN Author a ON b.Author_authorID = a.authorID
-                JOIN Publisher p ON b.Publisher_publisherID = p.publisherID
-                LEFT JOIN Book_info bi ON b.ISBN = bi.Book_ISBN
-            WHERE b.ISBN = ? GROUP BY b.ISBN""";
+            JOIN Publisher p ON b.Publisher_publisherID = p.publisherID
+            LEFT JOIN Book_info bi ON b.ISBN = bi.Book_ISBN
+            WHERE b.ISBN = ?
+            GROUP BY b.ISBN, b.title, b.date_acquired, b.description, b.Author_authorID,
+                     b.Publisher_publisherID, a.first_name, a.last_name, p.publisher_name""";
     private static final String INSERT_BOOK = """
             INSERT INTO Book (ISBN, title, date_acquired, description, Author_authorID, Publisher_publisherID)
             VALUES (?, ?, ?, ?, ?, ?)""";
