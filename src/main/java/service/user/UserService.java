@@ -45,7 +45,7 @@ public class UserService {
      */
     public UserDTO findUserByUsername(String username) throws BusinessValidationException {
         if (isBlank(username)) {
-            throw new BusinessValidationException("username cannot be empty");
+            throw new BusinessValidationException("Username cannot be blank.");
         }
         // Normalize lookup key.
         return userDAO.findByUsername(username.trim());
@@ -63,7 +63,7 @@ public class UserService {
         // Step 2: enforce unique username.
         UserDTO existing = userDAO.findByUsername(userDTO.getUsername().trim());
         if (existing != null) {
-            throw new BusinessValidationException("username already exists");
+            throw new BusinessValidationException("Username already exists.");
         }
         // Step 3: persist user.
         userDAO.addUser(userDTO);
@@ -81,7 +81,7 @@ public class UserService {
         // Step 2: ensure target user still exists.
         UserDTO existing = userDAO.findByUsername(userDTO.getUsername().trim());
         if (existing == null) {
-            throw new BusinessValidationException("user not found");
+            throw new BusinessValidationException("User not found.");
         }
         // Step 3: persist updated data.
         userDAO.updateUser(userDTO);
@@ -95,12 +95,12 @@ public class UserService {
      */
     public void deleteUser(String username) throws BusinessValidationException {
         if (isBlank(username)) {
-            throw new BusinessValidationException("username cannot be empty");
+            throw new BusinessValidationException("Username cannot be blank.");
         }
         // Ensure target exists before issuing delete.
         UserDTO existing = userDAO.findByUsername(username.trim());
         if (existing == null) {
-            throw new BusinessValidationException("user not found");
+            throw new BusinessValidationException("User not found.");
         }
         // Delete by unique username key.
         userDAO.deleteUser(username.trim());
@@ -115,27 +115,27 @@ public class UserService {
      */
     private void validateUser(UserDTO userDTO, boolean requireUsername) throws BusinessValidationException {
         if (userDTO == null) {
-            throw new BusinessValidationException("user cannot be null");
+            throw new BusinessValidationException("User cannot be null.");
         }
         // Username is required for create flow.
         if (requireUsername && isBlank(userDTO.getUsername())) {
-            throw new BusinessValidationException("username is required");
+            throw new BusinessValidationException("Username is required.");
         }
         // Basic field validation rules.
         if (isBlank(userDTO.getPassword()) || userDTO.getPassword().length() < 8) {
-            throw new BusinessValidationException("password must be at least 8 characters");
+            throw new BusinessValidationException("Password must be at least 8 characters");
         }
         if (isBlank(userDTO.getFirstName())) {
-            throw new BusinessValidationException("first name is required");
+            throw new BusinessValidationException("First name is required");
         }
         if (isBlank(userDTO.getLastName())) {
-            throw new BusinessValidationException("last name is required");
+            throw new BusinessValidationException("Last name is required");
         }
         if (isBlank(userDTO.getEmail()) || !userDTO.getEmail().contains("@")) {
-            throw new BusinessValidationException("email is invalid");
+            throw new BusinessValidationException("Email is invalid");
         }
         if (isBlank(userDTO.getPhone())) {
-            throw new BusinessValidationException("phone is required");
+            throw new BusinessValidationException("Phone is required");
         }
     }
 

@@ -18,7 +18,8 @@ import java.util.List;
  */
 public class BookUserDAOImpl implements BookUserDAO {
     private static final String QUERY_BOOKUSER = "SELECT * FROM Book_User ORDER BY book_userID DESC";
-    private static final String QUERY_BOOKUSER_ID = "SELECT * FROM Book_User WHERE book_userID = ?";
+    private static final String QUERY_BY_ID = "SELECT * FROM Book_User WHERE book_userID = ?";
+    private static final String QUERY_BY_USERNAME = "SELECT * FROM Book_User WHERE User_username = ? ORDER BY start_date DESC";
     private static final String INSERT_BOOKUSER = "INSERT INTO Book_User (start_date, return_date, late_fee, User_username, Book_Info_bookID) VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_BOOKUSER = "UPDATE Book_User SET start_date = ?, return_date = ?, late_fee = ?, User_username = ?, Book_Info_bookID = ? WHERE book_userID = ?";
     private static final String DELETE_BOOKUSER = "DELETE FROM Book_User WHERE book_userID = ?";
@@ -110,7 +111,7 @@ public class BookUserDAOImpl implements BookUserDAO {
     @Override
     public BookUserDTO getBookUserByID(int bookUserID) {
         try(Connection con = getConnection();
-        PreparedStatement ps = con.prepareStatement(QUERY_BOOKUSER_ID)){
+        PreparedStatement ps = con.prepareStatement(QUERY_BY_ID)){
             // Lookup a single record by id.
             ps.setInt(1, bookUserID);
             try(ResultSet rs = ps.executeQuery()){
@@ -137,6 +138,29 @@ public class BookUserDAOImpl implements BookUserDAO {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    /**
+     * Returns all borrow records for a specific user.
+     */
+    @Override
+    public List<BookUserDTO> getBookUserByUsername(String username) {
+        List<BookUserDTO> userRecords = new ArrayList<>();
+        try(Connection con = getConnection();
+        PreparedStatement ps = con.prepareStatement(QUERY_BY_USERNAME)){
+
+            // Set the username parameter
+            ps.setString(1, username);
+
+            try(ResultSet rs = ps.executeQuery()){
+                while(rs.next()){
+                    userRecords.add(mapBookUser(rs));
+                }
+            }
+        }catch (SQLException | IOException e){
+            throw new RuntimeException("getBookUserByUsername() failed: " + e.getMessage(), e);
+        }
+        return userRecords;
     }
 
     /**

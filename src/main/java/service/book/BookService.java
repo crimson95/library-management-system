@@ -55,13 +55,13 @@ public class BookService {
      */
     public BookDTO findByISBN(String isbn) throws BusinessValidationException {
         if (isbn == null ||isbn.trim().isEmpty()) {
-            throw new BusinessValidationException("ISBN cannot be empty");
+            throw new BusinessValidationException("ISBN cannot be blank.");
         }
         // Use trimmed value to avoid lookup mismatch from leading/trailing spaces.
         BookDTO book = bookDAO.findByISBN(isbn.trim());
 
         if (book == null) {
-            throw new BusinessValidationException("Book Not Found");
+            throw new BusinessValidationException("Book Not Found.");
         }
         return book;
     }
@@ -75,7 +75,7 @@ public class BookService {
      */
     public BookInfoDTO findCopyByID(int bookID) throws BusinessValidationException {
         if (bookID <= 0) {
-            throw new BusinessValidationException("Invalid Book ID");
+            throw new BusinessValidationException("Invalid Book ID.");
         }
         return bookInfoDAO.getBookInfoByID(bookID);
     }
@@ -89,7 +89,7 @@ public class BookService {
      */
     public List<BookInfoDTO> findCopiesByISBN(String isbn) throws BusinessValidationException {
         if (isbn == null ||isbn.trim().isEmpty()) {
-            throw new BusinessValidationException("ISBN cannot be empty");
+            throw new BusinessValidationException("ISBN cannot be blank.");
         }
         return bookInfoDAO.getBookInfoByISBN(isbn.trim());
     }
@@ -103,22 +103,22 @@ public class BookService {
     public void addBook(BookDTO bookDTO) throws BusinessValidationException {
         // Validate required fields before insert.
         if (bookDTO == null) {
-            throw new BusinessValidationException("Book cannot be null");
+            throw new BusinessValidationException("Book cannot be null.");
         }
         if (bookDTO.getIsbn() == null || bookDTO.getIsbn().trim().isEmpty()) {
-            throw new BusinessValidationException("ISBN cannot be empty");
+            throw new BusinessValidationException("ISBN cannot be blank.");
         }
         if (bookDTO.getTitle() == null || bookDTO.getTitle().trim().isEmpty()) {
-            throw new BusinessValidationException("Title cannot be empty");
+            throw new BusinessValidationException("Title cannot be blank.");
         }
         if (bookDTO.getDateAcquired() == null) {
-            throw new BusinessValidationException("Date acquired is required");
+            throw new BusinessValidationException("Date acquired is required.");
         }
         if (bookDTO.getAuthorID() <= 0) {
-            throw new BusinessValidationException("Author is required");
+            throw new BusinessValidationException("Author is required.");
         }
         if (bookDTO.getPublisherID() <= 0) {
-            throw new BusinessValidationException("Publisher is required");
+            throw new BusinessValidationException("Publisher is required.");
         }
         // Persist after validation passes.
         bookDAO.addBook(bookDTO);
@@ -132,7 +132,7 @@ public class BookService {
      */
     public void addBookCopy(BookInfoDTO bookInfoDTO) throws BusinessValidationException {
         if (bookInfoDTO == null) {
-            throw new BusinessValidationException("Book copy Info cannot be null");
+            throw new BusinessValidationException("Book copy Info cannot be blank.");
         }
         // Invoke DAO to write to the database.
         bookInfoDAO.addBookInfo(bookInfoDTO);
@@ -146,7 +146,7 @@ public class BookService {
      */
     public void updateBookCopy(BookInfoDTO bookInfoDTO) throws BusinessValidationException {
         if (bookInfoDTO == null) {
-            throw new BusinessValidationException("Book copy Info cannot be null");
+            throw new BusinessValidationException("Book copy Info cannot be blank.");
         }
         // Invoke DAO to write to the database.
         bookInfoDAO.updateBookInfo(bookInfoDTO);
@@ -164,7 +164,7 @@ public class BookService {
         // Ensure target record exists before issuing update.
         BookDTO existing = bookDAO.findByISBN(bookDTO.getIsbn().trim());
         if (existing == null) {
-            throw new BusinessValidationException("Book Not Found");
+            throw new BusinessValidationException("Book Not Found.");
         }
         // Persist updated fields.
         bookDAO.updateBook(bookDTO);
@@ -178,7 +178,7 @@ public class BookService {
      */
     public void deleteBook(String isbn) throws BusinessValidationException {
         if (isbn == null ||isbn.trim().isEmpty()) {
-            throw new BusinessValidationException("ISBN cannot be empty");
+            throw new BusinessValidationException("ISBN cannot be blank.");
         }
         // Delete by ISBN key.
         bookDAO.deleteBook(isbn.trim());
@@ -192,7 +192,7 @@ public class BookService {
      */
     public void deleteBookCopy(int bookID) throws BusinessValidationException {
         if(bookID <= 0) {
-            throw new BusinessValidationException("Invalid Book ID");
+            throw new BusinessValidationException("Invalid Book ID.");
         }
         // Delete by bookID key.
         bookInfoDAO.deleteBookInfo(bookID);
@@ -216,7 +216,7 @@ public class BookService {
      */
     public AuthorDTO findAuthorByID(int authorID) throws BusinessValidationException {
         if (authorID <= 0) {
-            throw new BusinessValidationException("Invalid Author ID");
+            throw new BusinessValidationException("Invalid Author ID.");
         }
         return authorDAO.findAuthorByID(authorID);
     }
@@ -229,7 +229,7 @@ public class BookService {
      */
     public void addAuthor(AuthorDTO author) throws BusinessValidationException {
         if (author == null || isBlank(author.getFirst_name()) || isBlank(author.getLast_name())) {
-            throw new BusinessValidationException("Author first name and last name cannot be empty");
+            throw new BusinessValidationException("Author first name and last name cannot be blank.");
         }
         authorDAO.addAuthor(author);
     }
@@ -242,7 +242,7 @@ public class BookService {
      */
     public void updateAuthor(AuthorDTO author) throws BusinessValidationException {
         if (author == null || isBlank(author.getFirst_name()) || isBlank(author.getLast_name())) {
-            throw new BusinessValidationException("Author first name and last name cannot be empty");
+            throw new BusinessValidationException("Author first name and last name cannot be blank.");
         }
         authorDAO.updateAuthor(author);
     }
@@ -255,7 +255,7 @@ public class BookService {
      */
     public void deleteAuthor(int authorID) throws BusinessValidationException {
         if (authorID <= 0) {
-            throw new BusinessValidationException("Invalid Author ID");
+            throw new BusinessValidationException("Invalid Author ID.");
         }
         authorDAO.deleteAuthor(authorID);
     }
@@ -278,7 +278,7 @@ public class BookService {
      */
     public PublisherDTO findPublisherByID(int publisherID) throws BusinessValidationException {
         if (publisherID <= 0) {
-            throw new BusinessValidationException("Invalid Publisher ID");
+            throw new BusinessValidationException("Invalid Publisher ID.");
         }
         return publisherDAO.findPublisherByID(publisherID);
     }
@@ -291,7 +291,7 @@ public class BookService {
      */
     public void addPublisher(PublisherDTO publisher) throws BusinessValidationException {
         if (publisher == null || isBlank(publisher.getPublisherName())) {
-            throw new BusinessValidationException("Publisher name cannot be empty");
+            throw new BusinessValidationException("Publisher name cannot be blank.");
         }
         publisherDAO.addPublisher(publisher);
     }
@@ -304,7 +304,7 @@ public class BookService {
      */
     public void updatePublisher(PublisherDTO publisher) throws BusinessValidationException {
         if (publisher == null || isBlank(publisher.getPublisherName())) {
-            throw new BusinessValidationException("Publisher name cannot be empty");
+            throw new BusinessValidationException("Publisher name cannot be blank.");
         }
         publisherDAO.updatePublisher(publisher);
     }
@@ -317,7 +317,7 @@ public class BookService {
      */
     public void deletePublisher(int publisherID) throws BusinessValidationException {
         if (publisherID <= 0) {
-            throw new BusinessValidationException("Invalid Publisher ID");
+            throw new BusinessValidationException("Invalid Publisher ID.");
         }
         publisherDAO.deletePublisher(publisherID);
     }
@@ -359,18 +359,18 @@ public class BookService {
      */
     private void validateBook(BookDTO bookDTO, boolean requireISBN) throws BusinessValidationException {
         if (bookDTO == null) {
-            throw new BusinessValidationException("Book cannot be null");
+            throw new BusinessValidationException("Book cannot be null.");
         }
         // ISBN is required for create flow.
         if (requireISBN && isBlank(bookDTO.getIsbn())) {
-            throw new BusinessValidationException("ISBN is required");
+            throw new BusinessValidationException("ISBN is required.");
         }
         // Basic field validation rules.
         if (isBlank(bookDTO.getTitle())){
-            throw new BusinessValidationException("Title is required");
+            throw new BusinessValidationException("Title is required.");
         }
         if (isBlank(bookDTO.getDescription())){
-            throw new BusinessValidationException("Date acquired is required");
+            throw new BusinessValidationException("Date acquired is required.");
         }
     }
 
@@ -392,10 +392,10 @@ public class BookService {
         // 1. Check if the physical copy exists and is currently available
         BookInfoDTO book = bookInfoDAO.getBookInfoByID(bookID);
         if (book == null) {
-            throw new BusinessValidationException("Cannot find this book (Book ID: " + bookID + ")");
+            throw new BusinessValidationException("Cannot find this book (Book ID: " + bookID + ").");
         }
         if (book.getStatus() != BookInfoDTO.STATUS_AVAILABLE) {
-            throw new BusinessValidationException("This book is currently not available (Status code: " + book.getStatus() + ")");
+            throw new BusinessValidationException("This book is currently not available (Status code: " + book.getStatus() + ").");
         }
 
         // 2. Create a new borrowing record (Default borrowing period is 14 days)
@@ -423,10 +423,10 @@ public class BookService {
         // 1. Find the existing borrowing record
         BookUserDTO record = bookUserDAO.getBookUserByID(bookUserID);
         if(record == null) {
-            throw new BusinessValidationException("Cannot find the borrowing record (Record ID: " + bookUserID + ")");
+            throw new BusinessValidationException("Cannot find the borrowing record (Record ID: " + bookUserID + ").");
         }
         if(record.getReturnDate() != null) {
-            throw new BusinessValidationException("This book has already been returned");
+            throw new BusinessValidationException("This book has already been returned.");
         }
 
         // 2. Set the actual return date to today using java.time.LocalDate
@@ -466,5 +466,19 @@ public class BookService {
      */
     public List<BookUserDTO> getAllBorrowRecords(){
         return bookUserDAO.getAllBookUser();
+    }
+
+    /**
+     * Retrieves all borrow records for a specific user.
+     *
+     * @param username the reader's username
+     * @return a list of BookUserDTO records belonging to the user
+     * @throws BusinessValidationException if username is blank
+     */
+    public List<BookUserDTO> getUserBorrowingHistory(String username) throws BusinessValidationException {
+        if(isBlank(username)){
+            throw new BusinessValidationException("Username cannot be blank.");
+        }
+        return bookUserDAO.getBookUserByUsername(username);
     }
 }

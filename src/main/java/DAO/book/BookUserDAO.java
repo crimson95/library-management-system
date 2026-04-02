@@ -50,4 +50,12 @@ public interface BookUserDAO {
      * @return overdue record count
      */
     int countOverdueRecords();
+
+    /**
+     * Returns all borrow records for a specific user.
+     *
+     * @param username the reader's username
+     * @return list of borrow records belonging to the user
+     */
+    List<BookUserDTO> getBookUserByUsername(String username);
 }

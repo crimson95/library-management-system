@@ -47,7 +47,7 @@
         <div class="logo" style="font-size: 20px; font-weight: bold;">LMS Reader Portal</div>
         <div class="links">
             <a href="${pageContext.request.contextPath}/user">Catalog</a>
-            <a href="#">My Records</a>
+            <a href="${pageContext.request.contextPath}/user/records">My Records</a>
             <a href="${pageContext.request.contextPath}/logout" style="color: #e74c3c">Logout</a>
         </div>
     </nav>

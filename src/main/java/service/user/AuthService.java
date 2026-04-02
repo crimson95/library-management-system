@@ -48,18 +48,18 @@ public class AuthService {
     public UserDTO login(String username, String password) throws BusinessValidationException {
         // Basic credential presence check before any DB access.
         if (isBlank(username) || isBlank(password)) {
-            throw new BusinessValidationException("username and password are required");
+            throw new BusinessValidationException("Username and password are required.");
         }
 
         // Lookup account by normalized username.
         UserDTO user = userService.findUserByUsername(username.trim());
         if (user == null) {
-            throw new BusinessValidationException("account does not exist");
+            throw new BusinessValidationException("Account does not exist.");
         }
 
         // Compare raw password input against account object authentication logic.
         if (!user.login(password.trim())) {
-            throw new BusinessValidationException("incorrect password");
+            throw new BusinessValidationException("Incorrect password.");
         }
         return user;
     }
