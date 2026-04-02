@@ -42,7 +42,7 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="logo" style="font-size: 20px; font-weight: bold;">📚 LMS Reader Portal</div>
+        <div class="logo" style="font-size: 20px; font-weight: bold;">LMS Reader Portal</div>
         <div class="links">
             <a href="${pageContext.request.contextPath}/user">Catalog</a>
             <a href="${pageContext.request.contextPath}/user/records">My Records</a>

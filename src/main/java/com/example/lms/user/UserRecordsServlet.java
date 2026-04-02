@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Servlet handling the reader's personal borrowing history view.
  */
-@WebServlet("/uesr/records")
+@WebServlet("/user/records")
 public class UserRecordsServlet extends HttpServlet {
     private final BookService bookService = new BookService();
 
@@ -34,7 +34,7 @@ public class UserRecordsServlet extends HttpServlet {
 
             // 3. Attach data to request and forward to JSP
             request.setAttribute("recordsList", records);
-            request.getRequestDispatcher("/WEB-INF/user/uesr-records.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/user/user-records.jsp").forward(request, response);
 
         }catch(Exception e){
             e.printStackTrace();
