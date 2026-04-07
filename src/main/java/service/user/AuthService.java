@@ -1,6 +1,7 @@
 package service.user;
 
 import DTO.user.UserDTO;
+import org.mindrot.jbcrypt.BCrypt;
 import service.BusinessValidationException;
 
 /**
@@ -57,8 +58,16 @@ public class AuthService {
             throw new BusinessValidationException("Account does not exist.");
         }
 
-        // Compare raw password input against account object authentication logic.
-        if (!user.login(password.trim())) {
+        boolean passwordMatch = false;
+        if(user.getPassword() != null && user.getPassword().startsWith("$2a$")){
+            // New Secure Flow: Compare raw password against BCrypt hash
+            passwordMatch = BCrypt.checkpw(password.trim(), user.getPassword());
+        } else {
+            // Legacy Flow: Fallback for old plaintext passwords in DB during transition
+            passwordMatch = user.login(password.trim());
+        }
+
+        if (!passwordMatch) {
             throw new BusinessValidationException("Incorrect password.");
         }
         return user;

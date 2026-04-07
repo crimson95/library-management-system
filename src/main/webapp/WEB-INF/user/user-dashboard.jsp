@@ -14,32 +14,7 @@
 <head>
     <meta charset="utf-8">
     <title>Library Catalog</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .navbar { background: #960000; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .navbar .links a { color: #fff; text-decoration: none; margin-left: 20px; font-weight: bold; }
-        .navbar .links a:hover { color: #960000; }
-
-        .container { padding: 30px; }
-
-        .welcome-banner { background: white; padding: 25px 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; border-left: 6px solid #960000; }
-        .welcome-banner h2 { margin: 0; color: #532828; }
-        .welcome-banner p { margin: 10px 0 0 0; color: #7f8c8d; }
-
-        .search-bar { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; gap: 10px; }
-        .search-bar input[type="text"] { flex: 1; padding: 10px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; }
-        .btn-search { background: #960000; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold; }
-        .btn-clear { background: #95a5a6; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; }
-
-        .catalog-card { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; }
-        table th, table td { padding: 16px 20px; text-align: left; border-bottom: 1px solid #eee; }
-        table th { background: #f8f9fa; color: #532828; font-weight: bold; }
-        table tr:hover { background: #fdfdfd; }
-        .book-title { font-size: 18px; color: #960000; margin: 0 0 5px 0; }
-        .book-meta { font-size: 13px; color: #7f8c8d; }
-        .book-desc { font-size: 14px; color: #555; line-height: 1.5; margin-top: 8px; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/user.css">
 </head>
 <body>
     <%-- Top Navigation Bar for Readers --%>
@@ -48,15 +23,15 @@
         <div class="links">
             <a href="${pageContext.request.contextPath}/user">Catalog</a>
             <a href="${pageContext.request.contextPath}/user/records">My Records</a>
-            <a href="${pageContext.request.contextPath}/logout" style="color: #e74c3c">Logout</a>
+            <a href="${pageContext.request.contextPath}/logout">Logout</a>
         </div>
     </nav>
 
     <div class="container">
-        <% UserDTO currentUser = (UserDTO) request.getAttribute("currentUser"); %>
+        <% UserDTO currentUser = (UserDTO) session.getAttribute("loginUser"); %>
 
         <%-- Welcome Section --%>
-        <div class="welcome-banner">
+        <div class="page-header">
             <h2>Welcome back, <%= currentUser != null ? currentUser.getFirstName() : "Reader" %>!</h2>
             <p>Explore our library catalog and find your next great read.</p>
         </div>
@@ -64,14 +39,14 @@
         <%-- Search Section --%>
         <div class="search-bar">
             <form method="get" action="${pageContext.request.contextPath}/user" style="display: flex; width: 100%; gap: 10px; margin: 0;">
-                <input type="text" name="search" placeholder="Search..." value="<%= request.getParameter("search") != null ? request.getParameter("search") : "" %>">
+                <input type="text" name="search" placeholder="Search..." value="${searchKeyword != null ? searchKeyword : ''}">
                 <button type="submit" class="btn-search">Search</button>
                 <a href="${pageContext.request.contextPath}/user" class="btn-clear">Clear</a>
             </form>
         </div>
 
         <%-- Catalog Display Section --%>
-        <div class="catalog-card">
+        <div class="card">
             <table>
                 <thead>
                     <tr>
@@ -128,6 +103,34 @@
                 <% } %>
                 </tbody>
             </table>
+        </div>
+        <div class="pagination">
+            <%
+                Integer currentPageObj = (Integer) request.getAttribute("currentPage");
+                Integer totalPagesObj = (Integer) request.getAttribute("totalPages");
+                String keyword = (String) request.getAttribute("searchKeyword");
+
+                int currentPage = (currentPageObj != null) ? currentPageObj : 1;
+                int totalPages = (totalPagesObj != null) ? totalPagesObj : 1;
+
+                // Keep the search parameter in the URL if it exists
+                String searchParam = (keyword != null && !keyword.isEmpty()) ? "&search=" + keyword : "";
+
+                // Show 'Previous' button if not on the first page
+                if(currentPage > 1){
+            %>
+                <a href="?page=<%= currentPage - 1 %><%= searchParam %>">&laquo; Prev</a>
+            <% } %>
+            <%  // Loop through and display page numbers
+                for(int i = 1; i <= totalPages; i++){
+            %>
+                <a href="?page=<%= i %><%= searchParam %>" class="<%= (i==currentPage) ? "active" : "" %>"><%= i %></a>
+            <% } %>
+            <%  // Show 'Next' button if not on the last page
+                if(currentPage < totalPages){
+            %>
+            <a href="?page=<%= currentPage + 1 %><%= searchParam %>">Next &raquo;</a>
+            <% } %>
         </div>
     </div>
 </body>

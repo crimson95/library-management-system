@@ -17,12 +17,19 @@ import java.util.List;
  * Handles borrow/return transaction rows linking user and physical book copy.
  */
 public class BookUserDAOImpl implements BookUserDAO {
+    /** Query to retrieve all borrowing records, ordered by most recent first. */
     private static final String QUERY_BOOKUSER = "SELECT * FROM Book_User ORDER BY book_userID DESC";
+    /** Single-record lookup query by primary key. */
     private static final String QUERY_BY_ID = "SELECT * FROM Book_User WHERE book_userID = ?";
+    /** Query to retrieve all borrowing records for a specific user. */
     private static final String QUERY_BY_USERNAME = "SELECT * FROM Book_User WHERE User_username = ? ORDER BY start_date DESC";
+    /** Insert query for a new borrowing transaction. */
     private static final String INSERT_BOOKUSER = "INSERT INTO Book_User (start_date, return_date, late_fee, User_username, Book_Info_bookID) VALUES (?, ?, ?, ?, ?)";
+    /** Update query for an existing borrowing transaction (used for returns and fee payments). */
     private static final String UPDATE_BOOKUSER = "UPDATE Book_User SET start_date = ?, return_date = ?, late_fee = ?, User_username = ?, Book_Info_bookID = ? WHERE book_userID = ?";
+    /** Delete query for a borrowing transaction by primary key. */
     private static final String DELETE_BOOKUSER = "DELETE FROM Book_User WHERE book_userID = ?";
+    /** Aggregate query to count records that are currently overdue (borrowed > 14 days and not returned). */
     private static final String COUNT_RECORDS = "SELECT COUNT(*) FROM Book_User WHERE return_date IS NULL AND CURDATE() > DATE_ADD(start_date, INTERVAL 14 DAY)";
 
     /**

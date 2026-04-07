@@ -4,28 +4,42 @@ CREATE DATABASE lms;
 
 USE lms;
 
--- 1. 建立出版社
+-- 1. Create Publishers
 CREATE TABLE Publisher (
     publisherID 	INT 		PRIMARY KEY 	AUTO_INCREMENT,
     publisher_name 	VARCHAR(30) NOT NULL
 );
 
-INSERT INTO Publisher(publisher_name) VALUES ('Kadokawa'), ('Algonquin'), ('Louis Express'), ('TongLi'), ('Collins'), ('Canbridge');
+INSERT INTO Publisher(publisher_name) VALUES ('Kadokawa'),
+                                             ('Algonquin'),
+                                             ('Louis Express'),
+                                             ('TongLi'),
+                                             ('Collins'),
+                                             ('Canbridge');
 
--- 2. 建立作者
+-- 2. Create Authors
 CREATE TABLE Author (
     authorID 	INT 		PRIMARY KEY 	AUTO_INCREMENT,
     first_name 	VARCHAR(15) NOT NULL,
     last_name 	VARCHAR(15) NOT NULL
 );
 
-INSERT INTO Author(first_name, last_name) VALUES ('Simon', 'Lu'), ('Lee', 'Cony'), ('Alyssa', 'Matelas'), ('Yoji', 'Sakamura'), ('Dale', 'White'), ('Giacomo', 'Stewart'),
-												('Hunter', 'Faulkner'), ('Zephr', 'Green'), ('Nayda', 'Walker'), ('Winifred', 'Howard'), ('Nicolas', 'Holland');
+INSERT INTO Author(first_name, last_name) VALUES ('Simon', 'Lu'),
+                                                 ('Lee', 'Cony'),
+                                                 ('Alyssa', 'Matelas'),
+                                                 ('Yoji', 'Sakamura'),
+                                                 ('Dale', 'White'),
+                                                 ('Giacomo', 'Stewart'),
+                                                 ('Hunter', 'Faulkner'),
+                                                 ('Zephr', 'Green'),
+                                                 ('Nayda', 'Walker'),
+                                                 ('Winifred', 'Howard'),
+                                                 ('Nicolas', 'Holland');
 
--- 3. 建立使用者
+-- 3. Create Users
 CREATE TABLE User (
     username 	VARCHAR(20) PRIMARY KEY,
-    password 	VARCHAR(20) NOT NULL,
+    password 	VARCHAR(255) NOT NULL,
     first_name 	VARCHAR(15) NOT NULL,
     last_name 	VARCHAR(15) NOT NULL,
     email 		VARCHAR(50) NOT NULL,
@@ -49,12 +63,13 @@ INSERT INTO User(username, password, first_name, last_name, phone, email) VALUES
 																				('XCD16BGH1GJ', 'XCD16BGH1GJ', 'Coby', 'Frederick', '(685)647-1857', 'coby06@hotmail.com'),
 																				('MMH32JTY5UA', 'MMH32JTY5UA', 'Geoffrey', 'Ramirez', '(227)453-2951', 'geooo@google.com'),
 																				('RKH38NJL5MM', 'RKH38NJL5MM', 'Gretchen', 'Figueroa', '(461)563-2813', 'fornare@google.ca'),
-																				('TIR27QDX6SD', 'TIR27QDX6SD', 'Celeste', 'Calderon', '(719)756-9566', 'celcal@outlook.ca');
+																				('TIR27QDX6SD', 'TIR27QDX6SD', 'Celeste', 'Calderon', '(719)756-9566', 'celcal@outlook.ca'),
+                                                                                ('test', '12345678', 'Test', 'Test', '(123)123-4567', 'test@123.com');
 
 INSERT INTO User(username, password, first_name, last_name, phone, email, is_admin)
 VALUES ('admin01', 'admin123', 'System', 'Admin', '0000000000', 'admin@lms.com', 1);
 
--- 4. 建立書籍目錄 (連結作者與出版社)
+-- 4. Create Book Catalog (linking authors and publishers)
 CREATE TABLE Book (
     ISBN 					VARCHAR(15) PRIMARY KEY,
     title 					VARCHAR(50) NOT NULL,
@@ -66,24 +81,24 @@ CREATE TABLE Book (
     FOREIGN KEY (Publisher_publisherID) REFERENCES Publisher(publisherID)
 );
 
-INSERT INTO Book (ISBN, title, date_acquired, description, Author_authorID, Publisher_publisherID) VALUES 
--- Java 與程式開發經典
-('9780134685991', 'Effective Java', '2014-01-10', 'Java 開發者的必讀聖經，介紹最佳實踐。', 1, 2),
-('9780132350884', 'Clean Code', '2003-01-15', '教你如何寫出乾淨、可維護的程式碼。', 2, 2),
-('9780596009205', 'Head First Java', '2022-01-20', '圖文並茂，最適合初學者的 Java 入門書。', 5, 1),
-('9781617294945', 'Spring in Action', '2024-02-01', '深入淺出 Spring Framework 5 的實戰指南。', 5, 5),
-('9780201633610', 'Design Patterns', '2021-12-05', '四人幫 (GoF) 的經典物件導向設計模式。', 1, 2),
+INSERT INTO Book (ISBN, title, date_acquired, description, Author_authorID, Publisher_publisherID) VALUES
+-- Java and Programming Classics
+('9780134685991', 'Effective Java', '2014-01-10', 'A must-read bible for Java developers, introducing best practices.', 1, 4),
+('9780132350884', 'Clean Code', '2003-01-15', 'Teaches you how to write clean, maintainable code.', 2, 2),
+('9780596009205', 'Head First Java', '2022-01-20', 'Rich in illustrations, the most suitable Java introductory book for beginners.', 6, 6),
+('9781617294945', 'Spring in Action', '2024-02-01', 'An in-depth practical guide to Spring Framework 5.', 5, 5),
+('9780201633610', 'Design Patterns', '2021-12-05', 'Classic object-oriented design patterns by the Gang of Four (GoF).', 8, 4),
 
--- 奇幻與小說類
-('9780747532743', 'Harry Potter and the Philosopher''s Stone', '2011-11-10', '哈利波特系列第一集：神秘的魔法石。', 3, 3),
-('9780747538493', 'Harry Potter and the Chamber of Secrets', '2013-11-12', '哈利波特系列第二集：消失的密室。', 3, 3),
-('9780007525546', 'The Hobbit', '2008-10-30', '魔戒前傳，比爾博·巴金斯的冒險故事。', 4, 4),
-('9780261102385', 'The Lord of the Rings', '2015-12-25', '魔戒三部曲全集，史詩般的奇幻旅程。', 4, 4),
+-- Fantasy and Fiction
+('9780747532743', 'Harry Potter and the Philosopher''s Stone', '2011-11-10', 'Harry Potter series book 1: The Philosopher''s Stone.', 3, 3),
+('9780747538493', 'Harry Potter and the Chamber of Secrets', '2013-11-12', 'Harry Potter series book 2: The Chamber of Secrets.', 3, 3),
+('9780007525546', 'The Hobbit', '2008-10-30', 'The Lord of the Rings prequel, the adventure story of Bilbo Baggins.', 4, 1),
+('9780261102385', 'The Lord of the Rings', '2015-12-25', 'The Lord of the Rings trilogy, an epic fantasy journey.', 4, 1),
 
--- 湊數用
-('9780137081073', 'The Clean Coder', '2002-02-02', '專業程式設計師的生存之道與職業素養。', 2, 2);
+-- Others / Miscellaneous
+('9780137081073', 'The Clean Coder', '2002-02-02', 'The survival guide and professional ethics for software developers.', 10, 6);
 
--- 5. 建立實體書 (連結書籍目錄)
+-- 5. Create Physical Book Copies (linking to book catalog)
 CREATE TABLE Book_Info (
     bookID 			INT 		PRIMARY KEY AUTO_INCREMENT,
     book_condition 	VARCHAR(50) NOT NULL,
@@ -92,43 +107,25 @@ CREATE TABLE Book_Info (
     FOREIGN KEY (Book_ISBN) REFERENCES Book(ISBN)
 );
 
-INSERT INTO Book_Info (bookID, book_condition, status, Book_ISBN) VALUES 
--- 1. Effective Java
-(1001, 'Good', 1, '9780134685991'),       -- 狀況良好，在庫
-(1002, 'Worn', 0, '9780134685991'),       -- 有點舊了，被借走了
+INSERT INTO Book_Info (bookID, book_condition, status, Book_ISBN) VALUES
+-- status: 1(Available), 0(Borrowed), 2(Maintenance)
+(1001, 'Good', 1, '9780134685991'),       -- Available
+(1002, 'Worn', 0, '9780134685991'),       -- [Borrowed]
+(1003, 'New', 1, '9780132350884'),        -- Available
+(1004, 'Good', 1, '9780596009205'),       -- Available
+(1005, 'Damaged', 2, '9780747532743'),    -- Under maintenance
+(1006, 'Good', 0, '9780747532743'),       -- [Borrowed]
+(1007, 'New', 1, '9780747532743'),        -- Available
+(1008, 'Good', 1, '9780747538493'),       -- Available
+(1009, 'Good', 0, '9780747538493'),       -- [Borrowed]
+(1010, 'Worn', 1, '9780201633610'),       -- Available
+(1011, 'New', 1, '9780007525546'),        -- Available
+(1012, 'Good', 0, '9780261102385'),       -- [Borrowed]
+(1013, 'New', 1, '9780261102385'),        -- Available
+(1014, 'New', 0, '9781617294945'),        -- [Borrowed]
+(1015, 'Good', 1, '9780137081073');       -- Available
 
--- 2. Clean Code
-(1003, 'New', 1, '9780132350884'),        -- 全新，在庫
-
--- 3. Head First Java
-(1004, 'Good', 1, '9780596009205'),       -- 狀況良好，在庫
-
--- 4. Harry Potter 1
-(1005, 'Damaged', 2, '9780747532743'),    -- 破損嚴重，送修中
-(1006, 'Good', 0, '9780747532743'),       -- 狀況良好，被借走了
-(1007, 'New', 1, '9780747532743'),        -- 剛補貨的，在庫
-
--- 5. Harry Potter 2
-(1008, 'Good', 1, '9780747538493'),
-(1009, 'Good', 0, '9780747538493'),
-
--- 6. Design Patterns
-(1010, 'Worn', 1, '9780201633610'),       -- 翻書痕跡明顯，但在庫
-
--- 7. The Hobbit
-(1011, 'New', 1, '9780007525546'),
-
--- 8. Lord of the Rings
-(1012, 'Good', 0, '9780261102385'),
-(1013, 'New', 1, '9780261102385'),
-
--- 9. Spring in Action
-(1014, 'New', 0, '9781617294945'),
-
--- 10. The Clean Coder
-(1015, 'Good', 1, '9780137081073');
-
--- 6. 建立借書紀錄 (連結使用者與實體書)
+-- 6. Create Borrowing Records (linking users and physical copies)
 CREATE TABLE Book_User (
     book_userID 		INT		 	PRIMARY KEY 	AUTO_INCREMENT,
     start_date 			DATE 		NOT NULL,
@@ -140,14 +137,19 @@ CREATE TABLE Book_User (
     FOREIGN KEY (Book_Info_bookID) REFERENCES Book_Info(bookID)
 );
 
-INSERT INTO Book_User(start_date, return_date, late_fee, User_username, Book_Info_bookID) VALUES ('2020-12-05', '2020-12-19', 0.00, 'NQJ67dMN2jb', 1006),
-																								('2023-04-23', '2023-06-30', 10.50, 'LWT29krn7SH', 1001),
-                                                                                                ('2019-02-23', '2019-03-03', 0.00, 'XEE06YPV8JF', 1008),
-                                                                                                ('2022-10-12', '2023-02-28', 30.00, 'HTQ48WFD7DG', 1003),
-                                                                                                ('2025-11-14', '2025-12-31', 8.50, 'QKJ56GRF5MT', 1012),
-                                                                                                ('2025-01-05', '2025-01-13', 0.00, 'DEU52NRD8SC', 1015),
-                                                                                                ('2024-07-16', '2024-08-18', 7.00, 'WNY88FWK4IR', 1004),
-                                                                                                ('2026-01-31', null, 0.00, 'VDS15IHH4BS', 1010);
+INSERT INTO Book_User(start_date, return_date, late_fee, User_username, Book_Info_bookID) VALUES -- [Historical Records (Returned)] (Corresponding Book_Info must be 1 or 2, return_date is not null)
+                                                                                                 ('2023-04-23', '2023-06-30', 10.50, 'LWT29krn7SH', 1001),
+                                                                                                 ('2022-10-12', '2023-02-28', 30.00, 'HTQ48WFD7DG', 1003),
+                                                                                                 ('2024-07-16', '2024-08-18', 7.00, 'WNY88FWK4IR', 1004),
+                                                                                                 ('2025-01-05', '2025-01-13', 0.00, 'DEU52NRD8SC', 1015),
+                                                                                                 ('2019-02-23', '2019-03-03', 0.00, 'XEE06YPV8JF', 1008),
+
+                                                                                                 -- [Currently Borrowed (Not Returned)] (Corresponding Book_Info must be 0, return_date must be null)
+                                                                                                 ('2026-04-02', null, 0.00, 'NQJ67dMN2jb', 1002), -- Recently borrowed (not overdue)
+                                                                                                 ('2026-02-15', null, 0.00, 'LWT29krn7SH', 1006), -- Borrowed for a long time (overdue)
+                                                                                                 ('2026-04-01', null, 0.00, 'XEE06YPV8JF', 1009), -- Recently borrowed (not overdue)
+                                                                                                 ('2026-03-05', null, 0.00, 'HTQ48WFD7DG', 1012), -- Borrowed for over 14 days (overdue)
+                                                                                                 ('2026-04-05', null, 0.00, 'QKJ56GRF5MT', 1014); -- Recently borrowed (not overdue)
 
 SELECT DISTINCT
     Book.ISBN AS 'ISBN',

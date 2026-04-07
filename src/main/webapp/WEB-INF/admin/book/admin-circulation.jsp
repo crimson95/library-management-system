@@ -33,20 +33,21 @@
         table th { background: #f8f9fa; color: #333; }
 
         /* Button Styles */
-        .btn { background: red; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; }
+        .btn { background: red; color: white; padding: 8px 15px; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; }
         .btn-borrow { background: #2980b9; height: 40px; }
-        .btn-return { background: #27ae60; padding: 6px 12px; }
+        .btn-return { background: #27ae60; padding: 8px 15px; }
 
-        .error { background: #ffeaa7; color: #d63031; padding: 12px; border-left: 5px solid #d63031; margin-bottom: 16px; font-weight: bold; border-radius: 4px; }
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; color: white; font-weight: bold; background: #e67e22; }
+        .error { background: #ffeaa7; color: #d63031; padding: 12px; border-left: 5px solid #d63031; margin-bottom: 16px; font-weight: bold; border-radius: 8px; }
+        .status-badge { padding: 8px 15px; border-radius: 8px; font-size: 14px; color: white; font-weight: bold; background: #e67e22; }
         .status-returned { background: #95a5a6; }
+        .status-overdue { background: #c0392b; }
     </style>
 </head>
 <body>
 <%-- Top navigation bar --%>
 <nav class="navbar">
     <div class="logo">Library Management System - Circulation Desk</div>
-    <div class="logout"><a href="${pageContext.request.contextPath}/logout" style="color: #ecf0f1;">Logout</a></div>
+    <div class="logout"><a href="${pageContext.request.contextPath}/logout">Logout</a></div>
 </nav>
 
 <div class="container">
@@ -103,6 +104,16 @@
                 if(borrowList != null && !borrowList.isEmpty()){
                     for(BookUserDTO record : borrowList){
                         boolean isReturned = (record.getReturnDate() != null);
+                        boolean isOverdue = false;
+
+                        // Calculate if the book is overdue using precise LocalDate math
+                        if(!isReturned){
+                            java.time.LocalDate today = java.time.LocalDate.now();
+                            java.time.LocalDate startDate = record.getStartDate().toLocalDate();
+                            java.time.LocalDate dueDate = startDate.plusDays(14);
+
+                            if(today.isAfter(dueDate)) isOverdue = true;
+                        }
             %>
                 <tr>
                     <td>#<%= record.getBookUserID() %></td>
@@ -110,10 +121,12 @@
                     <td><%= record.getUsername() %></td>
                     <td><%= record.getStartDate() %></td>
 
-                    <%-- Display Return Date or "Not Returned" Badge --%>
+                    <%-- Display Return Date, Overdue, or Borrowing Badge --%>
                     <td>
                         <% if(isReturned) { %>
                             <%= record.getReturnDate() %>
+                        <% } else if (isOverdue) { %>
+                            <span class="status-badge status-overdue">Overdue</span>
                         <% } else { %>
                             <span class="status-badge">Borrowing</span>
                         <% } %>
@@ -121,18 +134,29 @@
 
                     <%-- Display Late Fee --%>
                     <td style="color: <%= record.getLateFee() != null && record.getLateFee().doubleValue() > 0 ? "red" : "inherit" %>">
-                        $<%= record.getLateFee() != null ? record.getLateFee() : "0.00" %>
+                        <strong>$<%= record.getLateFee() != null ? record.getLateFee() : "0.00" %></strong>
                     </td>
 
-                    <%-- Action Column: Show Return Form if not yet returned --%>
+                    <%-- Show Pay button only if there is a fee and the book is already returned --%>
                     <td>
                         <% if(!isReturned) { %>
+                        <%-- Book is still out, show Return button --%>
                         <form method="post" style="margin: 0;" action="${pageContext.request.contextPath}/admin/circulation">
                             <input type="hidden" name="action" value="return" />
                             <input type="hidden" name="bookUserID" value="<%= record.getBookUserID() %>" />
                             <button type="submit" class="btn btn-return" onclick="return confirm('Process return for Record #<%= record.getBookUserID() %>?');">Return Book</button>
                         </form>
+
+                        <% } else if(record.getLateFee() != null && record.getLateFee().doubleValue() > 0){ %>
+                        <%-- Book returned but fee unpaid, show Pay button --%>
+                        <form method="post" action="${pageContext.request.contextPath}/admin/circulation" style="margin: 0;">
+                            <input type="hidden" name="action" value="pay" />
+                            <input type="hidden" name="bookUserID" value="<%= record.getBookUserID() %>" />
+                            <button type="submit" class="btn" style="background: #c0392b;"
+                                    onclick="return confirm('Confirm payment of $<%= record.getLateFee() %> for Record #<%= record.getBookUserID() %>?');">Process Payment</button>
+                        </form>
                         <% } else { %>
+                        <%-- Book returned AND fee is zero, show Completed --%>
                         <span class="status-badge status-returned">Completed</span>
                         <% } %>
                     </td>

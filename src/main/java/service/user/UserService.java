@@ -3,6 +3,7 @@ package service.user;
 import DAO.user.UserDAO;
 import DAO.user.UserDAOImpl;
 import DTO.user.UserDTO;
+import org.mindrot.jbcrypt.BCrypt;
 import service.BusinessValidationException;
 
 import java.util.List;
@@ -58,14 +59,18 @@ public class UserService {
      * @throws BusinessValidationException when validation fails or user exists
      */
     public void addUser(UserDTO userDTO) throws BusinessValidationException {
-        // Step 1: validate field-level business rules.
+        // Step 1: validate field-level business rules (validates the raw password length).
         validateUser(userDTO, true);
         // Step 2: enforce unique username.
         UserDTO existing = userDAO.findByUsername(userDTO.getUsername().trim());
         if (existing != null) {
             throw new BusinessValidationException("Username already exists.");
         }
-        // Step 3: persist user.
+        // Step 3: Hash the password using BCrypt before persisting.
+        String hashedPassword = BCrypt.hashpw(userDTO.getPassword(),  BCrypt.gensalt());
+        userDTO.setPassword(hashedPassword);
+
+        // Step 4: persist user.
         userDAO.addUser(userDTO);
     }
 
@@ -78,12 +83,21 @@ public class UserService {
     public void updateUser(UserDTO userDTO) throws BusinessValidationException {
         // Step 1: validate update payload.
         validateUser(userDTO, false);
+
         // Step 2: ensure target user still exists.
         UserDTO existing = userDAO.findByUsername(userDTO.getUsername().trim());
         if (existing == null) {
             throw new BusinessValidationException("User not found.");
         }
-        // Step 3: persist updated data.
+
+        // Step 3: Hash password only if it was changed to a new raw password.
+        // BCrypt hashes always start with "$2a$" and are 60 characters long.
+        if(userDTO.getPassword() != null && !userDTO.getPassword().startsWith("$2a$")) {
+            String hashedPassword = BCrypt.hashpw(userDTO.getPassword(),  BCrypt.gensalt());
+            userDTO.setPassword(hashedPassword);
+        }
+
+        // Step 4: persist updated data.
         userDAO.updateUser(userDTO);
     }
 

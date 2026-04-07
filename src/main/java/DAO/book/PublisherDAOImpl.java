@@ -17,9 +17,13 @@ import java.util.List;
 public class PublisherDAOImpl implements PublisherDAO {
     /** Query for loading publisher options in alphabetical order. */
     private static final String QUERY_ALL_PUBLISHERS = "SELECT * FROM Publisher ORDER BY publisher_name ASC";
+    /** Single-publisher lookup query by primary key. */
     private static final String QUERY_PUBLISHER_BY_ID = "SELECT * FROM Publisher WHERE publisherID = ?";
+    /** Insert query for a new publisher record. */
     private static final String INSERT_PUBLISHER = "INSERT INTO Publisher (publisher_name) VALUES (?)";
+    /** Update query for an existing publisher record. */
     private static final String UPDATE_PUBLISHER = "UPDATE Publisher SET publisher_name=? WHERE publisherID =?";
+    /** Delete query for a publisher record by primary key. */
     private static final String DELETE_PUBLISHER = "DELETE FROM Publisher WHERE publisherID =?";
 
     /**

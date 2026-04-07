@@ -30,7 +30,7 @@
 <%-- Top navigation bar --%>
 <nav class="navbar">
     <div class="logo">Library Management System</div>
-    <div class="logout"><a href="${pageContext.request.contextPath}/logout" style="color: #ecf0f1">Logout</a></div>
+    <div class="logout"><a href="${pageContext.request.contextPath}/logout">Logout</a></div>
 </nav>
 
 <div class="container">

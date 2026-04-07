@@ -13,32 +13,7 @@
 <head>
     <meta charset="utf-8">
     <title>My Borrowing Records</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-
-        /* Navigation Bar Styles */
-        .navbar { background: #960000; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .navbar .links a { color: #fff; text-decoration: none; margin-left: 20px; font-weight: bold; }
-        .navbar .links a:hover { color: #960000; }
-
-        .container { padding: 30px; }
-
-        /* Page Header Styles */
-        .page-header { background: white; padding: 25px 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; border-left: 6px solid #e67e22; }
-        .page-header h2 { margin: 0; color: #532828; }
-
-        /* Table Styles */
-        .record-card { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; }
-        table th, table td { padding: 16px 20px; text-align: left; border-bottom: 1px solid #eee; }
-        table th { background: #f8f9fa; color: #532828; font-weight: bold; }
-        table tr:hover { background: #fdfdfd; }
-
-        /* Status Badge Styles */
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; color: white; font-weight: bold; background: #960000; }
-        .status-returned { background: #95a5a6; }
-        .status-overdue { background: #e74c3c; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/user.css">
 </head>
 <body>
     <nav class="navbar">
@@ -46,7 +21,7 @@
         <div class="links">
             <a href="${pageContext.request.contextPath}/user">Catalog</a>
             <a href="${pageContext.request.contextPath}/user/records">My Records</a>
-            <a href="${pageContext.request.contextPath}/logout" style="color: #e74c3c;">Logout</a>
+            <a href="${pageContext.request.contextPath}/logout">Logout</a>
         </div>
     </nav>
 
@@ -55,7 +30,7 @@
             <h2>My Borrowing History</h2>
         </div>
 
-        <div class="record-card">
+        <div class="card">
             <table>
                 <thead>
                     <tr>

@@ -4,6 +4,7 @@ import DAO.DataSource;
 import DTO.book.AuthorDTO;
 import DTO.book.BookDTO;
 
+import java.awt.print.Book;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,7 +20,7 @@ import java.util.List;
  * required by admin list screens.
  */
 public class BookDAOImpl implements BookDAO{
-    /** Query for all books with robust grouping and null-handling for aggregates. */
+    /** Query to retrieve all books with their author and publisher names, and aggregated copy counts. */
     private static final String QUERY_BOOK = """
             SELECT b.ISBN, b.title, b.date_acquired, b.description, b.Author_authorID AS authorID,
                    b.Publisher_publisherID AS publisherID, a.first_name AS author_first_name,
@@ -32,7 +33,7 @@ public class BookDAOImpl implements BookDAO{
             GROUP BY b.ISBN, b.title, b.date_acquired, b.description, b.Author_authorID,
                      b.Publisher_publisherID, a.first_name, a.last_name, p.publisher_name
             ORDER BY b.ISBN DESC""";
-    /** Query for one book by ISBN with robust grouping and null-handling. */
+    /** Query to retrieve a single book by its ISBN, including aggregated copy counts. */
     private static final String QUERY_ISBN = """
             SELECT b.ISBN, b.title, b.date_acquired, b.description, b.Author_authorID AS authorID,
                    b.Publisher_publisherID AS publisherID, a.first_name AS author_first_name,
@@ -45,13 +46,34 @@ public class BookDAOImpl implements BookDAO{
             WHERE b.ISBN = ?
             GROUP BY b.ISBN, b.title, b.date_acquired, b.description, b.Author_authorID,
                      b.Publisher_publisherID, a.first_name, a.last_name, p.publisher_name""";
+    /** Insert query to add a new book record into the catalog. */
     private static final String INSERT_BOOK = """
             INSERT INTO Book (ISBN, title, date_acquired, description, Author_authorID, Publisher_publisherID)
             VALUES (?, ?, ?, ?, ?, ?)""";
+    /** Update query to modify an existing book's details by its ISBN. */
     private static final String UPDATE_BOOK = """
             UPDATE Book SET title = ?, date_acquired = ?, description = ?, Author_authorID = ?, Publisher_publisherID = ?
             WHERE ISBN = ?""";
+    /** Delete query to remove a book from the catalog by its ISBN. */
     private static final String DELETE_BOOK = "DELETE FROM Book WHERE ISBN = ?";
+    /** Query to retrieve a paginated list of books based on a keyword search across title, author, and ISBN. */
+    private static final String SEARCH_BOOKS_PAGED = """
+           SELECT b.ISBN, b.title, b.date_acquired, b.description, b.Author_authorID AS authorID,
+           b.Publisher_publisherID AS publisherID, a.first_name AS author_first_name,
+           a.last_name AS author_last_name, p.publisher_name AS publisher_name,
+           COUNT(bi.bookID) AS total_copies,
+           COALESCE(SUM(CASE WHEN bi.status = 1 THEN 1 ELSE 0 END), 0) AS available_copies
+           FROM Book AS b JOIN Author a ON b.Author_authorID = a.authorID
+                JOIN Publisher p ON b.Publisher_publisherID = p.publisherID
+                LEFT JOIN Book_info bi ON b.ISBN = bi.Book_ISBN
+           WHERE LOWER(b.title) LIKE ? OR LOWER(a.first_name) LIKE ? OR LOWER(a.last_name) LIKE ? OR LOWER(b.ISBN) LIKE ?
+           GROUP BY b.ISBN, b.title, b.date_acquired, b.description, b.Author_authorID, b.Publisher_publisherID,
+                    a.first_name, a.last_name, p.publisher_name
+           ORDER BY b.ISBN DESC LIMIT ? OFFSET ?""";
+    /** Query to count the total number of distinct books matching a keyword search for pagination logic. */
+    private static final String COUNT_SEARCH_BOOKS = """
+            SELECT COUNT(DISTINCT b.ISBN) FROM Book AS b JOIN Author a ON b.Author_authorID = a.authorID
+            WHERE LOWER(b.title) LIKE ? OR LOWER(a.first_name) LIKE ? OR LOWER(a.last_name) LIKE ? OR LOWER(b.ISBN) LIKE ?""";
 
     /**
      * Gets a JDBC connection from shared data source.
@@ -152,6 +174,75 @@ public class BookDAOImpl implements BookDAO{
             throw new RuntimeException("findByISBN() failed: " + e.getMessage(), e);
         }
         return null;
+    }
+
+    /**
+     * Retrieves a paginated list of books matching the search keyword.
+     * <p>
+     * Applies a case-insensitive LIKE filter across title, author names, and ISBN.
+     * Limits the result set based on the provided offset and limit for pagination.
+     *
+     * @param keyword the search keyword to filter by (can be null or empty)
+     * @param offset  the starting row index for the database query
+     * @param limit   the maximum number of records to retrieve
+     * @return a list of {@link BookDTO} objects representing the requested page
+     * @throws RuntimeException if a database access error occurs
+     */
+    @Override
+    public List<BookDTO>searchBooksByPage(String keyword, int offset, int limit){
+        List<BookDTO> books = new ArrayList<>();
+        // Formal keyword for SQL LIKE operator (e.g. "%java%")
+        String searchPattern = "%" + (keyword == null ? "" : keyword.trim().toLowerCase()) + "%";
+        try(Connection con = getConnection();
+            PreparedStatement ps = con.prepareStatement(SEARCH_BOOKS_PAGED)){
+            //Bind the search pattern to the 4 WHERE conditions
+            ps.setString(1, searchPattern);
+            ps.setString(2, searchPattern);
+            ps.setString(3, searchPattern);
+            ps.setString(4, searchPattern);
+            ps.setInt(5, limit);
+            ps.setInt(6, offset);
+
+            try(ResultSet rs = ps.executeQuery()){
+                while (rs.next()){
+                    books.add(mapBook(rs));
+                }
+            }
+        }catch (SQLException | IOException e){
+            throw new RuntimeException("searchBooksByPage() failed: " + e.getMessage(), e);
+        }
+        return books;
+    }
+
+    /**
+     * Counts the total number of distinct books matching the search keyword.
+     * <p>
+     * This is used primarily to calculate the total number of available pages
+     * for pagination logic in the service layer.
+     *
+     * @param keyword the search keyword to filter by (can be null or empty)
+     * @return the total count of matching books, or 0 if an error occurs
+     */
+    @Override
+    public int countBooksBySearch(String keyword){
+        String searchPattern = "%" + (keyword == null ? "" : keyword.trim().toLowerCase()) + "%";
+
+        try(Connection con = getConnection();
+        PreparedStatement ps = con.prepareStatement(COUNT_SEARCH_BOOKS)){
+            ps.setString(1, searchPattern);
+            ps.setString(2, searchPattern);
+            ps.setString(3, searchPattern);
+            ps.setString(4, searchPattern);
+
+            try(ResultSet rs = ps.executeQuery()){
+                if(rs.next()){
+                    return rs.getInt(1);
+                }
+            }
+        }catch (SQLException | IOException e){
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     /**

@@ -33,7 +33,7 @@ public class UserRecordsServlet extends HttpServlet {
             List<BookUserDTO> records = bookService.getUserBorrowingHistory(currentUser.getUsername());
 
             // 3. Attach data to request and forward to JSP
-            request.setAttribute("recordsList", records);
+            request.setAttribute("recordList", records);
             request.getRequestDispatcher("/WEB-INF/user/user-records.jsp").forward(request, response);
 
         }catch(Exception e){

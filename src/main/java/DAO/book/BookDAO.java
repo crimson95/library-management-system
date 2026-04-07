@@ -2,6 +2,7 @@ package DAO.book;
 
 import DTO.book.BookDTO;
 
+import java.awt.print.Book;
 import java.util.List;
 
 /**
@@ -45,4 +46,23 @@ public interface BookDAO {
      * @return matching book or null
      */
     BookDTO findByISBN(String isbn);
+
+    /**
+     * Retrieves a specific page of books matching the search keyword.
+     *
+     * @param keyword the search string (title, author, or ISBN)
+     * @param offset the starting row index
+     * @param limit the maximum number of rows to return
+     * @return a list of books for the requested page
+     */
+    List<BookDTO> searchBooksByPage(String keyword, int offset, int limit);
+
+    /**
+     * Counts the total number of books matching the search keyword.
+     * Used to calculate the total number of pages.
+     *
+     * @param keyword the search string
+     * @return total number of matching books
+     */
+    int countBooksBySearch(String keyword);
 }

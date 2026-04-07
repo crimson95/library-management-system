@@ -14,26 +14,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Add Books</title>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin.css">
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .navbar { background: #960000; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
         .container { padding: 30px; display: flex; align-items: center; justify-content: center; }
         .card { width: 100%; max-width: 500px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
         h2 { color: red; display: block; text-align: center; }
-        .row { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 6px; }
-        input { width: 100%; padding: 8px; box-sizing: border-box; }
-        .btn-row { display: flex; gap: 10px; margin-top: 16px; }
-        .btn { background: red; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; }
-        .btn-secondary { background: #333; }
-        .error { background: #ffeaa7; color: #d63031; padding: 12px; border-left: 5px solid #d63031; margin-bottom: 16px; font-weight: bold; border-radius: 4px; }
     </style>
 </head>
 <body>
 <%-- Top navigation bar --%>
 <nav class="navbar">
     <div class="logo">Library Management System</div>
-    <div class="logout"><a href="${pageContext.request.contextPath}/logout" style="color: #ecf0f1">Logout</a></div>
+    <div class="logout"><a href="${pageContext.request.contextPath}/logout">Logout</a></div>
 </nav>
 
 <div class="container">

@@ -17,13 +17,21 @@ import java.util.List;
  * Handles physical copy records (one row per copy) rather than logical titles.
  */
 public class BookInfoDAOImpl implements BookInfoDAO {
+    /** Query to retrieve all physical book copies, ordered by newest first. */
     private static final String QUERY_BOOKINFO = "SELECT * FROM Book_Info ORDER BY BookID DESC";
+    /** Single-copy lookup query by primary key. */
     private static final String QUERY_BOOKINFO_ID = "SELECT * FROM Book_Info WHERE bookID = ?";
+    /** Query to retrieve all physical copies associated with a specific book ISBN. */
     private static final String QUERY_BY_ISBN = "SELECT * FROM Book_Info WHERE book_ISBN = ? ORDER BY bookID DESC";
+    /** Insert query for a new physical book copy. */
     private static final String INSERT_BOOKINFO = "INSERT INTO Book_Info (book_condition, status, Book_ISBN) VALUES (?, ?, ?)";
+    /** Update query for the condition and status of an existing book copy. */
     private static final String UPDATE_BOOKINFO = "UPDATE Book_Info SET book_condition = ?, status = ? WHERE bookID = ?";
+    /** Delete query for a book copy by primary key. */
     private static final String DELETE_BOOKINFO = "DELETE FROM Book_Info WHERE bookID = ?";
+    /** Aggregate query to count the total number of physical copies in the library. */
     private static final String COUNT_COPY = "SELECT COUNT(*) FROM book_info";
+    /** Aggregate query to count physical copies filtered by their current status. */
     private static final String COUNT_COPY_STATUS = "SELECT COUNT(*) FROM Book_Info WHERE status = ?";
 
     /**

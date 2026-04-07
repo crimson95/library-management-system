@@ -17,28 +17,16 @@
 <head>
     <meta charset="utf-8">
     <title>Manage Copies</title>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin.css">
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .navbar { background: #960000; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .container { padding: 30px; }
-        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
-        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         h2 { margin: 0; color: red; }
         p { color: #666; margin-top: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        table th, table td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
-        table th { background: #f8f9fa; color: #333; }
-        .btn { background: red; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; }
-        .btn-add { background: #27ae60; }
-        .btn-edit { background: #2980b9; margin-right: 5px; }
-        .btn-delete { background: #c0392b; }
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; color: white; font-weight: bold; }
     </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="logo">Library Management System</div>
-        <div class="logout"><a href="${pageContext.request.contextPath}/logout" style="color: #ecf0f1;">Logout</a></div>
+        <div class="logout"><a href="${pageContext.request.contextPath}/logout">Logout</a></div>
     </nav>
 
     <div class="container">

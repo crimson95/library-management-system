@@ -17,9 +17,13 @@ import java.util.List;
 public class AuthorDAOImpl implements AuthorDAO{
     /** Query for loading all author records used by dropdown/list screens. */
     private static final String QUERY_ALL_AUTHORS = "SELECT * FROM Author ORDER BY first_name ASC";
+    /** Single-author lookup query by primary key. */
     private static final String QUERY_AUTHOR_BY_ID = "SELECT * FROM Author WHERE authorID = ?";
+    /** Insert query for a new author record. */
     private static final String INSERT_AUTHOR = "INSERT INTO Author (first_name, last_name) VALUES (?, ?)";
+    /** Update query for an existing author record. */
     private static final String UPDATE_AUTHOR = "UPDATE Author SET first_name = ?, last_name = ? WHERE authorID = ?";
+    /** Delete query for an author record by primary key. */
     private static final String DELETE_AUTHOR = "DELETE FROM Author WHERE authorID = ?";
 
     /**

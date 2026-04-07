@@ -99,6 +99,28 @@ public class AdminCirculationServlet extends HttpServlet {
                 }
                 break; // Break to fallback to doGet and display errors
             }
+
+            case "pay":{
+                String bookUserIDRaw = request.getParameter("bookUserID");
+
+                try{
+                    int bookUserID = Integer.parseInt(bookUserIDRaw);
+
+                    // Delegate to service layer to clear the fee
+                    bookService.payLateFee(bookUserID);
+
+                    response.sendRedirect(request.getContextPath() + "/admin/circulation");
+                    return;
+                }catch (BusinessValidationException e){
+                    request.setAttribute("error",e.getMessage());
+                }catch (NumberFormatException e){
+                    request.setAttribute("error","Invalid Record ID format.");
+                }catch(Exception e){
+                    e.printStackTrace();
+                    request.setAttribute("error", "System error while processing pay request.");
+                }
+                break;   // Break to fallback to doGet and display errors
+            }
         }
 
         // If an error occurred or action was invalid, fall back to the GET flow to display the page with errors

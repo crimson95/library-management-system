@@ -14,10 +14,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Servlet handling the reader's main dashboard and library catalog view.
+ * Servlet handling the reader's main dashboard and book catalog search.
  * <p>
- * This servlet ensures the user is authenticated, fetches the complete
- * or filtered list of books, and forwards the data to the user dashboard JSP.
+ * Supports paginated viewing and keyword searching across the library catalog.
  */
 @WebServlet("/user")
 public class UserDashboardServlet extends HttpServlet {
@@ -35,46 +34,35 @@ public class UserDashboardServlet extends HttpServlet {
             return;
         }
 
-        // Retrieve the currently logged-in user to personalize the dashboard
-        UserDTO currentUser = (UserDTO)request.getSession(false).getAttribute("loginUser");
-        request.setAttribute("currentUser", currentUser);
+        // 2. Retrieve search keyword (if any)
+        String searchKeyword = request.getParameter("search");
+        if(searchKeyword == null) searchKeyword = "";
 
-        try{
-            // 2. Fetch all books from the database via BookService
-            List<BookDTO> books = bookService.findAllBooks();
-            String search = request.getParameter("search");
+        // 3. Setup pagination parameters
+        int page = 1;
+        int recordsPerPage = 8; // Display 8 books per page
 
-            // 3. Handle optional search filtering
-            if(search != null && !search.trim().isEmpty()){
-                String query = search.trim().toLowerCase();
-                List<BookDTO>filtered = new ArrayList<>();
-
-                // Use Java Streams to filter books by Title, Author, or ISBN
-                books = books.stream()
-                        .filter(b -> containsIgnoreCase(b.getTitle(), query) ||
-                                containsIgnoreCase(b.getAuthorName(), query) ||
-                                containsIgnoreCase(b.getIsbn(), query))
-                        .collect(Collectors.toList());
-
-                /* different way:
-                for(BookDTO book : books){
-                    if(containsIgnoreCase(book.getTitle(), query) ||
-                            containsIgnoreCase(book.getAuthorName(), query) ||
-                            containsIgnoreCase(book.getIsbn(), query)){
-                        filtered.add(book);
-                    }
-                }
-                books = filtered; // Replace original list with the filtered results
-                */
-            }
-
-            // 4. Pass the final book list to the view
-            request.setAttribute("bookList", books);
-            request.getRequestDispatcher("/WEB-INF/user/user-dashboard.jsp").forward(request, response);
-        }catch (Exception e){
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot load the library catalog.");
+        String pageParam = request.getParameter("page");
+        if(pageParam != null && !pageParam.isEmpty()){
+          try{
+              page = Integer.parseInt(pageParam);
+          }  catch (NumberFormatException e){
+              page = 1; // Fallback to page 1 if parameter is invalid
+          }
         }
+
+        // 4. Fetch paginated data and total pages from business layer
+        List<BookDTO> books = bookService.searchBooksByPage(searchKeyword, page, recordsPerPage);
+        int totalPages = bookService.getTotalPages(searchKeyword,recordsPerPage);
+
+        // 5. Attach data to request to render in JSP
+        request.setAttribute("bookList", books);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("searchKeyword", searchKeyword);
+
+        // 6. Forward to the view
+        request.getRequestDispatcher("/WEB-INF/user/user-dashboard.jsp").forward(request, response);
     }
 
     /**

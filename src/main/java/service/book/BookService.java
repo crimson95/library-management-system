@@ -460,6 +460,29 @@ public class BookService {
     }
 
     /**
+     * Processes the payment of late fees for a specific borrowing record.
+     *
+     * @param bookUserID the primary key ID of the borrowing record
+     * @throws BusinessValidationException if the record is not found or has no fees
+     */
+    public void payLateFee(int bookUserID) throws BusinessValidationException {
+        // 1. Find the record
+        BookUserDTO record = bookUserDAO.getBookUserByID(bookUserID);
+        if(record == null) {
+            throw new BusinessValidationException("Cannot find the borrowing record.");
+        }
+
+        // 2. Check if there is actually a fee to pay
+        if(record.getLateFee() == null || record.getLateFee().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+            throw new BusinessValidationException("There is no outstanding late fee for this record.");
+        }
+
+        // 3. Reset the fee to zero and update the database
+        record.setLateFee(java.math.BigDecimal.ZERO);
+        bookUserDAO.updateBookUser(record);
+    }
+
+    /**
      * Retrieves all borrow records for the circulation dashboard.
      *
      * @return a list of all BookUserDTO records
@@ -480,5 +503,32 @@ public class BookService {
             throw new BusinessValidationException("Username cannot be blank.");
         }
         return bookUserDAO.getBookUserByUsername(username);
+    }
+
+    /**
+     * Searches for books with pagination.
+     *
+     * @param keyword search keyword (can be null or empty)
+     * @param page current page number (starts from 1)
+     * @param recordsPerPage number of records per page
+     * @return a list of books for the specific page
+     */
+    public List<BookDTO> searchBooksByPage(String keyword, int page, int recordsPerPage) {
+        // Calculate the starting row index for the database
+        int offset = (page - 1) * recordsPerPage;
+        return bookDAO.searchBooksByPage(keyword, offset, recordsPerPage);
+    }
+
+    /**
+     * Calculates the total number of pages needed for the search results.
+     *
+     * @param keyword search keyword
+     * @param recordsPerPage number of records per page
+     * @return total pages
+     */
+    public int getTotalPages(String keyword, int recordsPerPage) {
+        int totalPages = bookDAO.countBooksBySearch(keyword);
+        // Use Math.ceil to round up (e.g. 21 records / 10 = 3 pages)
+        return (int) Math.ceil((double) totalPages / recordsPerPage);
     }
 }
