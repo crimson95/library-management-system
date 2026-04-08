@@ -16,7 +16,7 @@
       .grid { display: grid; gap: 16px; }
       .cards { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
       .card { background: #ffefef; padding: 20px; border: 1px solid #cacaca; border-radius: 8px; }
-      .actions { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
+      .links { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
       .btn { display:inline-block; padding: 8px 12px; background: #e40a0a; color: #fff; text-decoration: none; border-radius: 6px; }
       .btn.secondary { background-color: #333; }
       .section { margin-top: 24px; }
@@ -26,7 +26,7 @@
   <%-- Dashboard title + top-level navigation --%>
   <h1>Admin Dashboard</h1>
   <nav class="navbar">
-      <div class="actions">
+      <div class="links">
           <a class="btn" href="${pageContext.request.contextPath}/admin/books">Manage Books</a>
           <a class="btn" href="${pageContext.request.contextPath}/admin/members">Manage Members</a>
           <a class="btn" href="${pageContext.request.contextPath}/admin/authors">Manage Authors</a>
@@ -52,7 +52,7 @@
   <%-- Quick links to common admin operations --%>
   <div class="section">
       <h2>Quick Actions</h2>
-      <div class="actions">
+      <div class="links">
           <a class="btn secondary" href="${pageContext.request.contextPath}/admin/books?action=add-book">Add New Book</a>
           <a class="btn secondary" href="${pageContext.request.contextPath}/admin/members?action=add-admin">Add Admin User</a>
           <a class="btn secondary" href="${pageContext.request.contextPath}/admin/authors?action=add">Add New Author</a>

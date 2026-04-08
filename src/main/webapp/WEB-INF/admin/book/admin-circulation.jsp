@@ -13,35 +13,7 @@
 <head>
     <meta charset="utf-8">
     <title>Circulation Desk</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .navbar { background: #960000; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .container { padding: 30px; }
-        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); margin-bottom: 30px; }
-        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        h2 { color: red; }
-
-        /* Form Styles */
-        .form-row { display: flex; gap: 15px; align-items: flex-end; margin-bottom: 15px; }
-        .form-group { display: flex; flex-direction: column; flex: 1; }
-        .form-group label { font-weight: bold; margin-bottom: 5px; color: #333; }
-        .form-group input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
-
-        /* Table Styles */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        table th, table td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
-        table th { background: #f8f9fa; color: #333; }
-
-        /* Button Styles */
-        .btn { background: red; color: white; padding: 8px 15px; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; }
-        .btn-borrow { background: #2980b9; height: 40px; }
-        .btn-return { background: #27ae60; padding: 8px 15px; }
-
-        .error { background: #ffeaa7; color: #d63031; padding: 12px; border-left: 5px solid #d63031; margin-bottom: 16px; font-weight: bold; border-radius: 8px; }
-        .status-badge { padding: 8px 15px; border-radius: 8px; font-size: 14px; color: white; font-weight: bold; background: #e67e22; }
-        .status-returned { background: #95a5a6; }
-        .status-overdue { background: #c0392b; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin.css">
 </head>
 <body>
 <%-- Top navigation bar --%>

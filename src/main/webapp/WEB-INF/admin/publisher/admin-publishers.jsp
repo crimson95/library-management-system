@@ -39,13 +39,13 @@
       <div class="error"> <%= error %></div>
     <% } %>
 
-    <table class="table">
+    <table>
       <thead>
-      <tr>
-        <th>Publisher ID</th>
-        <th>Publisher Name</th>
-        <th>Actions</th>
-      </tr>
+        <tr>
+          <th>Publisher ID</th>
+          <th>Publisher Name</th>
+          <th>Actions</th>
+        </tr>
       </thead>
       <tbody>
       <%

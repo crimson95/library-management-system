@@ -14,9 +14,6 @@
     <meta charset="UTF-8">
     <title>User Management</title>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin.css">
-    <style>
-        .action-group { display: flex; gap: 5px; align-items: center; flex-wrap: nowrap }
-    </style>
 </head>
 <body>
     <%-- Top navigation for admin pages --%>
@@ -74,13 +71,11 @@
                     <td><%= user.getPhone() %></td>
                     <td><%= user.isAdmin() ? "Administrator" : "Member" %></td>
                     <td>
-                        <div class="action-group">
-                            <%-- Open edit form for selected username --%>
-                            <a href="${pageContext.request.contextPath}/admin/members?action=update&username=<%= user.getUsername() %>" class="btn btn-edit">Edit</a>
-                            <%-- Trigger delete flow with simple confirm dialog --%>
-                            <a href="${pageContext.request.contextPath}/admin/members?action=delete&username=<%= user.getUsername() %>" class="btn btn-delete"
-                               onclick="return confirm('Are you sure to delete { <%= user.getUsername() %> }?');">Delete</a>
-                        </div>
+                        <%-- Open edit form for selected username --%>
+                        <a href="${pageContext.request.contextPath}/admin/members?action=update&username=<%= user.getUsername() %>" class="btn btn-edit">Edit</a>
+                        <%-- Trigger delete flow with simple confirm dialog --%>
+                        <a href="${pageContext.request.contextPath}/admin/members?action=delete&username=<%= user.getUsername() %>" class="btn btn-delete"
+                           onclick="return confirm('Are you sure to delete { <%= user.getUsername() %> }?');">Delete</a>
                     </td>
                 </tr>
                 <%      }
