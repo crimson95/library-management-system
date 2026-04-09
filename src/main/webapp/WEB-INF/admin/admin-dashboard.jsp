@@ -17,7 +17,7 @@
       .cards { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
       .card { background: #ffefef; padding: 20px; border: 1px solid #cacaca; border-radius: 8px; }
       .links { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
-      .btn { display:inline-block; padding: 8px 12px; background: #e40a0a; color: #fff; text-decoration: none; border-radius: 6px; }
+      .btn { display:inline-block; padding: 8px 12px; background: red; color: white; text-decoration: none; border-radius: 8px; }
       .btn.secondary { background-color: #333; }
       .section { margin-top: 24px; }
     </style>

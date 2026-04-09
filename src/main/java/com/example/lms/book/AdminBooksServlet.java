@@ -133,6 +133,7 @@ public class AdminBooksServlet extends HttpServlet {
             // Default branch: show list with optional in-memory filtering.
             List<BookDTO> books = bookService.findAllBooks();
             String search = request.getParameter("search");
+
             if(search != null && !search.trim().isEmpty()) {
                 String query = search.trim().toLowerCase();
                 List<BookDTO> filtered = new java.util.ArrayList<>();

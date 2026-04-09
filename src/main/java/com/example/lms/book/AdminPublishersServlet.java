@@ -66,22 +66,40 @@ public class AdminPublishersServlet extends HttpServlet {
                 }
 
                 default:{
-                    // Default page: publisher listing.
-                    List<PublisherDTO> publishers = bookService.findAllPublishers();
-                    request.setAttribute("publisherList", publishers);
-                    request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publishers.jsp").forward(request, response);
+                    // Fall back to default book list view.
                     break;
                 }
             }
         }catch (BusinessValidationException e){
             request.setAttribute("error", e.getMessage());
-            request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publishers.jsp").forward(request, response);
         }catch (Exception e){
             e.printStackTrace();
             request.setAttribute("error", "System error or this publisher has existing books.");
-            request.setAttribute("publisherList", bookService.findAllPublishers());
-            request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publishers.jsp").forward(request, response);
         }
+
+        try{
+            String search = request.getParameter("search");
+            List<PublisherDTO> publishers = bookService.findAllPublishers();
+
+            if (search != null && !search.trim().isEmpty()){
+                String query = search.trim().toLowerCase();
+                List<PublisherDTO> filtered = new java.util.ArrayList<>();
+                for (PublisherDTO publisher : publishers) {
+                    // Search supports key fields shown in the table.
+                    if(containsIgnoreCase(String.valueOf(publisher.getPublisherID()), query)
+                    || containsIgnoreCase(publisher.getPublisherName(), query)){
+                        filtered.add(publisher);
+                    }
+                }
+                publishers = filtered;
+            }
+            request.setAttribute("publisherList", publishers);
+            request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publishers.jsp").forward(request, response);
+        } catch (Exception e) {
+            // If list cannot be loaded, return server error.
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot load the publisher list");
+        }
+
     }
 
     /**
@@ -129,5 +147,15 @@ public class AdminPublishersServlet extends HttpServlet {
             }
         }
         doGet(request, response);
+    }
+
+    /**
+     * Null-safe helper used by search filter.
+     */
+    private boolean containsIgnoreCase(String value, String query){
+        if(value == null){
+            return false;
+        }
+        return value.toLowerCase().contains(query);
     }
 }

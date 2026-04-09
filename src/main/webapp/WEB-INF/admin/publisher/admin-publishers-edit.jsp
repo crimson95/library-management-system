@@ -13,11 +13,6 @@
     <meta charset="utf-8">
     <title>Edit Publisher</title>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin.css">
-    <style>
-        .container { padding: 30px; display: flex; align-items: center; justify-content: center; }
-        .card { width: 100%; max-width: 500px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        h2 { color: red; display: block; text-align: center; }
-    </style>
 </head>
 <body>
 <%-- Top navigation bar --%>
@@ -27,7 +22,8 @@
 </nav>
 
 <div class="container">
-    <div class="card">
+
+    <div class="form-container">
         <h2>Edit Publisher</h2>
 
         <%-- Show validation/business error from servlet --%>
@@ -46,12 +42,14 @@
             <input type="hidden" name="action" value="update" />
             <input type="hidden" name="publisherID" value="<%= publisher != null ? publisher.getPublisherID() : "" %>" />
 
-            <div class="row">
-                <label for="publisher">Publisher Name</label>
-                <input type="text" name="publisher" id="publisher" maxlength="30" value="<%= publisher != null && publisher.getPublisherName() != null ? publisher.getPublisherName() : "" %>" />
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="publisher">Publisher Name</label>
+                    <input type="text" name="publisher" id="publisher" maxlength="30" value="<%= publisher != null && publisher.getPublisherName() != null ? publisher.getPublisherName() : "" %>" />
+                </div>
             </div>
 
-            <div class="btn-row">
+            <div class="form-action">
                 <%-- Confirm submits update; Cancel returns to list page --%>
                 <button class="btn" type="submit">Confirm update</button>
                 <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/publishers">Cancel</a>

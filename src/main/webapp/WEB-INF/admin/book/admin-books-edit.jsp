@@ -16,11 +16,6 @@
   <meta charset="UTF-8">
   <title>Edit Book Information</title>
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin.css">
-  <style>
-    .container { padding: 30px; display: flex; align-items: center; justify-content: center; }
-    .card { width: 100%; max-width: 500px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-    h2 { color: red; display: block; text-align: center; }
-  </style>
 </head>
 <body>
 <%-- Top navigation bar --%>
@@ -30,8 +25,6 @@
 </nav>
 
 <div class="container">
-  <div class="card">
-    <h2>Edit Book Information</h2>
 
     <%-- Show validation/business error from servlet --%>
     <% String error = (String) request.getAttribute("error");
@@ -44,72 +37,86 @@
     <%-- Book object loaded by servlet for pre-filling the form --%>
     <% BookDTO book = (BookDTO) request.getAttribute("book"); %>
 
-    <%-- Update form: ISBN is read-only key, other fields are editable --%>
-    <form method="post" action="${pageContext.request.contextPath}/admin/books">
-      <input type="hidden" name="action" value="update" />
+    <div class="form-container">
+      <h2>Edit Book Information</h2>
 
-      <div class="row">
-        <label for="isbn">ISBN</label>
-        <input type="text" name="isbn" id="isbn" maxlength="10" value="<%= book != null ? book.getIsbn() : "" %>" readonly>
-      </div>
-      <div class="row">
-        <label for="title">Title</label>
-        <input type="text" name="title" id="title" value="<%= book != null ? book.getTitle() : "" %>">
-      </div>
-      <div class="row">
-        <label for="date_acquired">Date Acquired</label>
-        <input type="date" name="date_acquired" id="date_acquired" value="<%= book != null ? book.getDateAcquired() : "" %>">
-      </div>
-      <div class="row">
-        <label for="description">Description</label>
-        <input type="text" name="description" id="description" value="<%= book != null ? book.getDescription() : "" %>">
-      </div>
-      <div class="row">
-        <label for="author">Author</label>
-        <select name="authorID" id="authorID" style="width: 100%; padding: 8px;">
-          <%
-            // Dropdown options are loaded by servlet during edit flow.
-            List<AuthorDTO> authors = (List<AuthorDTO>) request.getAttribute("authorList");
-            if(authors != null){
-              for(AuthorDTO author : authors){
-                boolean isSelectedAuthor = (book != null && book.getAuthorID() == author.getAuthorID());
-          %>
-          <option value="<%= author.getAuthorID() %>" <%= isSelectedAuthor ? "selected" : "" %>>
-            <%= author.getFullName() %>
-          </option>
-          <%
-              }
-            }
-          %>
-        </select>
-      </div>
-      <div class="row">
-        <label for="publisher">Publisher</label>
-        <select name="publisherID" id="publisherID" style="width: 100%; padding: 8px;">
-          <%
-            // Keep currently selected publisher based on book payload.
-            List<PublisherDTO> publishers = (List<PublisherDTO>) request.getAttribute("publisherList");
-            if(publishers != null){
-              for(PublisherDTO publisher : publishers){
-                boolean isSelectedPublisher = (book != null && book.getPublisherID() == publisher.getPublisherID());
-          %>
-          <option value="<%= publisher.getPublisherID() %>" <%= isSelectedPublisher ? "selected" : "" %>>
-            <%= publisher.getPublisherName() %>
-          </option>
-          <%
-              }
-            }
-          %>
-        </select>
-      </div>
+      <%-- Update form: ISBN is read-only key, other fields are editable --%>
+      <form method="post" action="${pageContext.request.contextPath}/admin/books">
+        <input type="hidden" name="action" value="update" />
 
-      <div class="btn-row">
-        <%-- Confirm submits update; Cancel returns to list page --%>
-        <button class="btn" type="submit">Confirm update</button>
-        <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/books">Cancel</a>
-      </div>
-    </form>
-  </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="isbn">ISBN</label>
+            <input type="text" name="isbn" id="isbn" maxlength="10" value="<%= book != null && book.getIsbn() != null ? book.getIsbn() : "" %>" readonly>
+          </div>
+          <div class="form-group">
+            <label for="date_acquired">Date Acquired</label>
+            <input type="date" name="date_acquired" id="date_acquired" value="<%= book != null && book.getDateAcquired() != null ? book.getDateAcquired() : "" %>">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="author">Author</label>
+            <select name="authorID" id="authorID" style="width: 100%; padding: 8px;">
+              <%
+                // Dropdown options are loaded by servlet during edit flow.
+                List<AuthorDTO> authors = (List<AuthorDTO>) request.getAttribute("authorList");
+                if(authors != null){
+                  for(AuthorDTO author : authors){
+                    boolean isSelectedAuthor = (book != null && book.getAuthorID() == author.getAuthorID());
+              %>
+              <option value="<%= author.getAuthorID() %>" <%= isSelectedAuthor ? "selected" : "" %>>
+                <%= author.getFullName() %>
+              </option>
+              <%
+                  }
+                }
+              %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="publisher">Publisher</label>
+            <select name="publisherID" id="publisherID" style="width: 100%; padding: 8px;">
+              <%
+                // Keep currently selected publisher based on book payload.
+                List<PublisherDTO> publishers = (List<PublisherDTO>) request.getAttribute("publisherList");
+                if(publishers != null){
+                  for(PublisherDTO publisher : publishers){
+                    boolean isSelectedPublisher = (book != null && book.getPublisherID() == publisher.getPublisherID());
+              %>
+              <option value="<%= publisher.getPublisherID() %>" <%= isSelectedPublisher ? "selected" : "" %>>
+                <%= publisher.getPublisherName() %>
+              </option>
+              <%
+                  }
+                }
+              %>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" name="title" id="title" maxlength="50" value="<%= book != null && book.getTitle() != null ? book.getTitle() : "" %>">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea name="description" id="description" rows="5"><%= book != null && book.getDescription() != null ? book.getDescription() : "" %></textarea>
+          </div>
+        </div>
+
+          <div class="form-action">
+            <%-- Confirm submits update; Cancel returns to list page --%>
+            <button class="btn" type="submit">Confirm update</button>
+            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/books">Cancel</a>
+          </div>
+      </form>
+    </div>
 </div>
 </body>
 </html>

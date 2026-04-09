@@ -44,4 +44,12 @@ public interface PublisherDAO {
      * @param publisherID publisher primary key
      */
     void deletePublisher(int publisherID);
+
+    /**
+     * Retrieves a specific publisher matching the search keyword.
+     *
+     * @param keyword the search string
+     * @return a list of publisher for the requested page
+     */
+    List<PublisherDTO> searchPublishers(String keyword);
 }

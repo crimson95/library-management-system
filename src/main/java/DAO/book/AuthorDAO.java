@@ -42,4 +42,12 @@ public interface AuthorDAO {
      * @param authorID author primary key
      */
     void deleteAuthor(int authorID);
+
+    /**
+     * Retrieves a specific author matching the search keyword.
+     *
+     * @param keyword the search string
+     * @return a list of author for the requested page
+     */
+    List<AuthorDTO> searchAuthors(String keyword);
 }

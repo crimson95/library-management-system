@@ -13,12 +13,6 @@
     <meta charset="utf-8">
     <title>Edit Author</title>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin.css">
-    <style>
-        .container { padding: 30px; display: flex; align-items: center; justify-content: center; }
-        .card { width: 100%; max-width: 500px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        h2 { color: red; display: block; text-align: center; }
-        input[readonly] { background: #f0f0f0; color: #666; cursor: not-allowed; }
-    </style>
 </head>
 <body>
 <%-- Top navigation bar --%>
@@ -28,7 +22,8 @@
 </nav>
 
 <div class="container">
-    <div class="card">
+
+    <div class="form-container">
         <h2>Edit Author</h2>
 
         <%-- Show validation/business error from servlet --%>
@@ -47,16 +42,18 @@
             <input type="hidden" name="action" value="update" />
             <input type="hidden" name="authorID" value="<%= author != null ? author.getAuthorID() : "" %>" />
 
-            <div class="row">
-                <label for="first_name">First Name</label>
-                <input type="text" name="first_name" id="first_name" maxlength="15" value="<%= author != null && author.getFirst_name() != null ? author.getFirst_name() : "" %>" />
-            </div>
-            <div class="row">
-                <label for="last_name">Last Name</label>
-                <input type="text" name="last_name" id="last_name" maxlength="15" value="<%= author != null && author.getLast_name() != null ? author.getLast_name() : "" %>">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input type="text" name="first_name" id="first_name" maxlength="15" value="<%= author != null && author.getFirst_name() != null ? author.getFirst_name() : "" %>" />
+                </div>
+                <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input type="text" name="last_name" id="last_name" maxlength="15" value="<%= author != null && author.getLast_name() != null ? author.getLast_name() : "" %>">
+                </div>
             </div>
 
-            <div class="btn-row">
+            <div class="form-action">
                 <%-- Confirm submits update; Cancel returns to list page --%>
                 <button class="btn" type="submit">Confirm update</button>
                 <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/authors">Cancel</a>

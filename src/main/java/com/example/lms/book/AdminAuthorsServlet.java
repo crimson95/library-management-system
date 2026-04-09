@@ -63,21 +63,39 @@ public class AdminAuthorsServlet extends HttpServlet {
                 }
 
                 default:{
-                    // Default page: author listing.
-                    List<AuthorDTO> authors = bookService.findAllAuthors();
-                    request.setAttribute("authorList", authors);
-                    request.getRequestDispatcher("/WEB-INF/admin/author/admin-authors.jsp").forward(request, response);
+                    // Fall back to default book list view.
                     break;
                 }
             }
         }catch (BusinessValidationException e){
             request.setAttribute("error", e.getMessage());
-            request.getRequestDispatcher("/WEB-INF/admin/author/admin-authors.jsp").forward(request, response);
         }catch (Exception e){
             e.printStackTrace();
             request.setAttribute("error", "System error or this author has existing books.");
-            request.setAttribute("authorList", bookService.findAllAuthors());
+        }
+
+        try{
+            String search = request.getParameter("search");
+            List<AuthorDTO> authors = bookService.findAllAuthors();
+
+            if(search != null && !search.trim().isEmpty()){
+                String query = search.trim().toLowerCase();
+                List<AuthorDTO> filtered = new java.util.ArrayList<>();
+                for(AuthorDTO author : authors){
+                    // Search supports key fields shown in the table.
+                    if(containsIgnoreCase(String.valueOf(author.getAuthorID()), query)
+                    || containsIgnoreCase(author.getFirst_name(), query)
+                    || containsIgnoreCase(author.getLast_name(), query)){
+                        filtered.add(author);
+                    }
+                }
+                authors = filtered;
+            }
+            request.setAttribute("authorList", authors);
             request.getRequestDispatcher("/WEB-INF/admin/author/admin-authors.jsp").forward(request, response);
+        } catch (Exception e) {
+            // If list cannot be loaded, return server error.
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot load the author list");
         }
     }
 
@@ -128,5 +146,15 @@ public class AdminAuthorsServlet extends HttpServlet {
             }
         }
         doGet(request, response);
+    }
+
+    /**
+     * Null-safe helper used by search filter.
+     */
+    private boolean containsIgnoreCase(String value, String query){
+        if(value == null){
+            return false;
+        }
+        return value.toLowerCase().contains(query);
     }
 }

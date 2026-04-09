@@ -25,6 +25,8 @@ public class PublisherDAOImpl implements PublisherDAO {
     private static final String UPDATE_PUBLISHER = "UPDATE Publisher SET publisher_name=? WHERE publisherID =?";
     /** Delete query for a publisher record by primary key. */
     private static final String DELETE_PUBLISHER = "DELETE FROM Publisher WHERE publisherID =?";
+    /** Query for searching publishers by name. */
+    private static final String SEARCH_PUBLISHERS = "SELECT * FROM Publisher WHERE LOWER(publisher_name) LIKE ? OR ORDER BY publisher_name ASC";
 
     /**
      * Gets a JDBC connection from shared data source.
@@ -120,5 +122,32 @@ public class PublisherDAOImpl implements PublisherDAO {
         }catch (SQLException | IOException e){
             throw new RuntimeException("deletePublisher() failed: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Searches the database for publishers matching a specific keyword in their name.
+     *
+     * @param keyword the search string to filter by
+     * @return a list of {@link PublisherDTO} objects matching the search criteria
+     * @throws RuntimeException if a database access error occurs
+     */
+    @Override
+    public List<PublisherDTO> searchPublishers(String keyword){
+        List<PublisherDTO> publishers = new ArrayList<>();
+        String searchPattern = "%" + (keyword == null ? "" : keyword.trim().toLowerCase()) + "%";
+
+        try(Connection con = getConnection();
+        PreparedStatement ps = con.prepareStatement(SEARCH_PUBLISHERS)){
+            ps.setString(1, searchPattern);
+
+            try(ResultSet rs = ps.executeQuery()){
+                while(rs.next()){
+                    publishers.add(new PublisherDTO(rs.getInt("publisherID"), rs.getString("publisher_name")));
+                }
+            }
+        }catch (SQLException | IOException e){
+            throw new RuntimeException("searchPublishers() failed: " + e.getMessage(), e);
+        }
+        return publishers;
     }
 }

@@ -25,6 +25,10 @@
     <div class="card">
         <div class="header-actions">
             <h2>Author Management</h2>
+            <form class="search-bar" method="get" action="${pageContext.request.contextPath}/admin/authors">
+                <input type="text" name="search" class="search-input" placeholder="Search..." value="${param.search}">
+                <button type="submit" class="btn btn-search">Search</button>
+            </form>
             <div>
                 <a href="${pageContext.request.contextPath}/admin/authors?action=add" class="btn btn-add">Add New Author</a>
                 <a href="${pageContext.request.contextPath}/admin/books" class="btn">Back to Book Management</a>

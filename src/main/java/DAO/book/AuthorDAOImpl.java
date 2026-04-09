@@ -25,6 +25,8 @@ public class AuthorDAOImpl implements AuthorDAO{
     private static final String UPDATE_AUTHOR = "UPDATE Author SET first_name = ?, last_name = ? WHERE authorID = ?";
     /** Delete query for an author record by primary key. */
     private static final String DELETE_AUTHOR = "DELETE FROM Author WHERE authorID = ?";
+    /** Query for searching authors by first or last name. */
+    private static final String SEARCH_AUTHORS = "SELECT * FROM Author WHERE LOWER(first_name) LIKE ? OR LOWER(last_name) LIKE ? ORDER BY first_name ASC";
 
     /**
      * Gets a JDBC connection from shared data source.
@@ -123,5 +125,33 @@ public class AuthorDAOImpl implements AuthorDAO{
         }catch (SQLException | IOException e){
             throw new RuntimeException("deleteAuthor() failed: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Searches the database for authors matching a specific keyword in their name.
+     *
+     * @param keyword the search string to filter by
+     * @return a list of {@link AuthorDTO} objects matching the search criteria
+     * @throws RuntimeException if a database access error occurs
+     */
+    @Override
+    public List<AuthorDTO> searchAuthors(String keyword){
+        List<AuthorDTO> authors = new ArrayList<>();
+        String searchPattern = "%" + (keyword == null ? "" : keyword.trim().toLowerCase()) + "%";
+
+        try(Connection con = getConnection();
+        PreparedStatement ps = con.prepareStatement(SEARCH_AUTHORS)){
+            ps.setString(1, searchPattern);
+            ps.setString(2, searchPattern);
+
+            try(ResultSet rs = ps.executeQuery()){
+                while(rs.next()){
+                    authors.add(new AuthorDTO(rs.getInt("authorID"), rs.getString("first_name"), rs.getString("last_name")));
+                }
+            }
+        }catch (SQLException | IOException e){
+            throw new RuntimeException("searchAuthors() failed: " + e.getMessage(), e);
+        }
+        return authors;
     }
 }

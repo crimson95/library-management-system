@@ -18,10 +18,6 @@
     <meta charset="utf-8">
     <title>Manage Copies</title>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin.css">
-    <style>
-        h2 { margin: 0; color: red; }
-        p { color: #666; margin-top: 5px; }
-    </style>
 </head>
 <body>
     <nav class="navbar">
