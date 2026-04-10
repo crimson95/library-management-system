@@ -16,7 +16,7 @@
 <body>
 <%-- Top navigation bar --%>
 <nav class="navbar">
-    <div class="logo">Library Management System</div>
+    <div class="logo"><a href="${pageContext.request.contextPath}/admin">Library Management System</a></div>
     <div class="logout"><a href="${pageContext.request.contextPath}/logout">Logout</a></div>
 </nav>
 
@@ -28,8 +28,7 @@
         <%-- Show validation/business error from servlet --%>
         <% String error = (String) request.getAttribute("error");
         if(error != null) { %>
-        <%-- Inline alert + banner both show the same server-side message --%>
-            <script>alert('<%= error %>');</script>
+        <%-- Inline banner show the server-side message --%>
             <div class="error"> <%= error %></div>
         <% } %>
 

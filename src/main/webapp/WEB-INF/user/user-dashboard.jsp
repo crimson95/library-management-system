@@ -19,9 +19,9 @@
 <body>
     <%-- Top Navigation Bar for Readers --%>
     <nav class="navbar">
-        <div class="logo" style="font-size: 20px; font-weight: bold;">LMS Reader Portal</div>
+        <div class="logo"><a href="${pageContext.request.contextPath}/user">LMS Reader Portal</a></div>
         <div class="links">
-            <a href="${pageContext.request.contextPath}/user">Catalog</a>
+            <a href="${pageContext.request.contextPath}/user/profile">My Profile</a>
             <a href="${pageContext.request.contextPath}/user/records">My Records</a>
             <a href="${pageContext.request.contextPath}/logout">Logout</a>
         </div>
@@ -37,11 +37,11 @@
         </div>
 
         <%-- Search Section --%>
-        <div class="search-bar">
-            <form method="get" action="${pageContext.request.contextPath}/user" style="display: flex; width: 100%; gap: 10px; margin: 0;">
-                <input type="text" name="search" placeholder="Search..." value="${searchKeyword != null ? searchKeyword : ''}">
-                <button type="submit" class="btn-search">Search</button>
-                <a href="${pageContext.request.contextPath}/user" class="btn-clear">Clear</a>
+        <div class="card">
+            <form class="search-bar" method="get" action="${pageContext.request.contextPath}/user">
+                <input type="text" name="search" class="search-input" placeholder="Search..." value="${searchKeyword != null ? searchKeyword : ''}">
+                <button type="submit" class="btn btn-search">Search</button>
+                <a href="?" class="btn btn-clear">Clear</a>
             </form>
         </div>
 
@@ -114,7 +114,10 @@
                 int totalPages = (totalPagesObj != null) ? totalPagesObj : 1;
 
                 // Keep the search parameter in the URL if it exists
-                String searchParam = (keyword != null && !keyword.isEmpty()) ? "&search=" + keyword : "";
+                String searchParam = "";
+                if(keyword != null && !keyword.isEmpty()) {
+                    searchParam = "&search=" +java.net.URLEncoder.encode(keyword, "UTF-8");
+                }
 
                 // Show 'Previous' button if not on the first page
                 if(currentPage > 1){
@@ -129,7 +132,7 @@
             <%  // Show 'Next' button if not on the last page
                 if(currentPage < totalPages){
             %>
-            <a href="?page=<%= currentPage + 1 %><%= searchParam %>">Next &raquo;</a>
+                <a href="?page=<%= currentPage + 1 %><%= searchParam %>">Next &raquo;</a>
             <% } %>
         </div>
     </div>

@@ -53,6 +53,28 @@ public class UserService {
     }
 
     /**
+     * Retrieves a paginated list of members, optionally filtered by search keyword.
+     *
+     * @param keyword search keyword (can be null or empty)
+     * @param offset database offset
+     * @param limit maximum records per page
+     * @return list of matching members
+     */
+    public List<UserDTO> searchUsersByPage(String keyword, int offset, int limit) {
+        return userDAO.searchUsersByPage(keyword, offset, limit);
+    }
+
+    /**
+     * Calculates the total number of members matching the search keyword.
+     *
+     * @param keyword search keyword (can be null or empty)
+     * @return total count of matching members
+     */
+    public int countUsersBySearch(String keyword) {
+        return userDAO.countUsersBySearch(keyword);
+    }
+
+    /**
      * Adds a new user after validation and duplicate check.
      *
      * @param userDTO user to add

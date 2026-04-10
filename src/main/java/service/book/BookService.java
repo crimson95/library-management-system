@@ -527,8 +527,8 @@ public class BookService {
      * @return total pages
      */
     public int getTotalPages(String keyword, int recordsPerPage) {
-        int totalPages = bookDAO.countBooksBySearch(keyword);
+        int totalRecords = bookDAO.countBooksBySearch(keyword);
         // Use Math.ceil to round up (e.g. 21 records / 10 = 3 pages)
-        return (int) Math.ceil((double) totalPages / recordsPerPage);
+        return (int) Math.ceil((double) totalRecords / recordsPerPage);
     }
 }

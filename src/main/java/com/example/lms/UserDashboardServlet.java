@@ -36,28 +36,29 @@ public class UserDashboardServlet extends HttpServlet {
 
         // 2. Retrieve search keyword (if any)
         String searchKeyword = request.getParameter("search");
+        String pageParam = request.getParameter("page");
+
         if(searchKeyword == null) searchKeyword = "";
 
         // 3. Setup pagination parameters
-        int page = 1;
+        int currentPage = 1;
         int recordsPerPage = 8; // Display 8 books per page
 
-        String pageParam = request.getParameter("page");
         if(pageParam != null && !pageParam.isEmpty()){
           try{
-              page = Integer.parseInt(pageParam);
+              currentPage = Integer.parseInt(pageParam);
           }  catch (NumberFormatException e){
-              page = 1; // Fallback to page 1 if parameter is invalid
+              currentPage = 1; // Fallback to page 1 if parameter is invalid
           }
         }
 
         // 4. Fetch paginated data and total pages from business layer
-        List<BookDTO> books = bookService.searchBooksByPage(searchKeyword, page, recordsPerPage);
+        List<BookDTO> books = bookService.searchBooksByPage(searchKeyword, currentPage, recordsPerPage);
         int totalPages = bookService.getTotalPages(searchKeyword,recordsPerPage);
 
         // 5. Attach data to request to render in JSP
         request.setAttribute("bookList", books);
-        request.setAttribute("currentPage", page);
+        request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("searchKeyword", searchKeyword);
 

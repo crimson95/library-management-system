@@ -101,27 +101,39 @@ public class AdminMembersServlet extends HttpServlet {
             request.setAttribute("error", "System error or the user has outstanding borrowing records; deletion is not possible.");
         }
         try{
-            // Default list view, with optional in-memory filtering via search parameter.
-            List<UserDTO> users = userService.findAllUsers();
+            // 1. Retrieve search keyword and page parameter
             String search = request.getParameter("search");
-            if (search != null && !search.trim().isEmpty()) {
-                String query = search.trim().toLowerCase();
-                List<UserDTO> filtered = new java.util.ArrayList<>();
-                for (UserDTO user : users) {
-                    // Search also supports role text.
-                    String role = user.isAdmin() ? "administrator" : "member";
-                    if (containsIgnoreCase(user.getUsername(), query)
-                        || containsIgnoreCase(user.getFirstName(), query)
-                        || containsIgnoreCase(user.getLastName(), query)
-                        || containsIgnoreCase(user.getEmail(), query)
-                        || containsIgnoreCase(user.getPhone(), query)
-                        || role.contains(query)) {
-                        filtered.add(user);
-                    }
+            String pageParam = request.getParameter("page");
+
+            int currentPage = 1;
+            int recordsPerPage = 8;
+
+            if(pageParam != null && !pageParam.isEmpty()){
+                try{
+                    currentPage = Integer.parseInt(pageParam);
+                    if(currentPage < 1) currentPage = 1;
+                }catch (NumberFormatException e){
+                    currentPage = 1;
                 }
-                users = filtered;
             }
+
+            // 2. Calculate database offset
+            int offset = (currentPage - 1) * recordsPerPage;
+
+            // 3. Fetch total count and calculate total pages
+            int totalRecords = userService.countUsersBySearch(search);
+            int totalPages = (int) Math.ceil((double)totalRecords / recordsPerPage);
+            if(totalPages == 0) totalPages = 1; // Ensure at least 1 page exists
+
+            // 4. Fetch paginated member list
+            List<UserDTO> users= userService.searchUsersByPage(search, offset, recordsPerPage);
+
+            // 5. Set attributes for JSP rendering
             request.setAttribute("userList", users);
+            request.setAttribute("currentPage", currentPage);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("searchKeyword", search != null ? search : "");
+
             request.getRequestDispatcher("/WEB-INF/admin/user/admin-members.jsp").forward(request, response);
 
         }catch (Exception e){

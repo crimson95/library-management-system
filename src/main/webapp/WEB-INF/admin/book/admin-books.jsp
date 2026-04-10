@@ -18,7 +18,7 @@
 <body>
     <%-- Top navigation for admin area --%>
     <nav class="navbar">
-        <div class="logo">Library Management System</div>
+        <div class="logo"><a href="${pageContext.request.contextPath}/admin">Library Management System</a></div>
         <div class="logout"><a href="${pageContext.request.contextPath}/logout">Logout</a></div>
     </nav>
 
@@ -31,6 +31,7 @@
                 <form class="search-bar" method="get" action="${pageContext.request.contextPath}/admin/books">
                     <input type="text" name="search" class="search-input" placeholder="Search..." value="${param.search}">
                     <button type="submit" class="btn btn-search">Search</button>
+                    <a href="?" class="btn btn-secondary">Clear</a>
                 </form>
                 <div>
                     <a href="${pageContext.request.contextPath}/admin/books?action=add-book" class="btn btn-add">Add New Book</a>
@@ -117,6 +118,39 @@
                 %>
                 </tbody>
             </table>
+        </div>
+
+        <%-- Pagination Controls --%>
+        <div class="pagination">
+            <%
+                Integer currentPageObj = (Integer) request.getAttribute("currentPage");
+                Integer totalPagesObj = (Integer) request.getAttribute("totalPages");
+                String keyword = (String) request.getAttribute("searchKeyword");
+
+                int currentPage = (currentPageObj != null) ? currentPageObj : 1;
+                int totalPages = (totalPagesObj != null) ? totalPagesObj : 1;
+
+                // Keep the search parameter in the URL if it exists
+                String searchParam = "";
+                if(keyword != null && !keyword.isEmpty()) {
+                    searchParam = "&search=" +java.net.URLEncoder.encode(keyword, "UTF-8");
+                }
+
+                // Show 'Previous' button if not on the first page
+                if(currentPage > 1){
+            %>
+                <a href="?page=<%= currentPage - 1 %><%= searchParam %>">&laquo; Prev</a>
+            <% } %>
+            <%  // Loop through and display page numbers
+                for(int i = 1; i <= totalPages; i++){
+            %>
+                <a href="?page=<%= i %><%= searchParam %>" class="<%= (i==currentPage) ? "active" : "" %>"><%= i %></a>
+            <% } %>
+            <%  // Show 'Next' button if not on the last page
+                if(currentPage < totalPages){
+            %>
+                <a href="?page=<%= currentPage + 1 %><%= searchParam %>">Next &raquo;</a>
+            <% } %>
         </div>
     </div>
 </body>

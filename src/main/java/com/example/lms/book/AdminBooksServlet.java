@@ -130,30 +130,37 @@ public class AdminBooksServlet extends HttpServlet {
         }
 
         try{
-            // Default branch: show list with optional in-memory filtering.
-            List<BookDTO> books = bookService.findAllBooks();
+            // 1. Retrieve search keyword and page parameter
             String search = request.getParameter("search");
+            String pageParam = request.getParameter("page");
 
-            if(search != null && !search.trim().isEmpty()) {
-                String query = search.trim().toLowerCase();
-                List<BookDTO> filtered = new java.util.ArrayList<>();
-                for (BookDTO book : books) {
-                    // Search supports key fields shown in the table.
-                    if(containsIgnoreCase(book.getIsbn(), query)
-                    || containsIgnoreCase(book.getTitle(), query)
-                    || containsIgnoreCase(String.valueOf(book.getDateAcquired()), query)
-                    || containsIgnoreCase(book.getDescription(), query)
-                    || containsIgnoreCase(book.getAuthorName(), query)
-                    || containsIgnoreCase(book.getPublisherName(), query)){
-                        filtered.add(book);
-                    }
+            int currentPage = 1;
+            int recordsPerPage = 8;
+
+            if(pageParam != null && !pageParam.isEmpty()){
+                try{
+                    currentPage = Integer.parseInt(pageParam);
+                    if(currentPage < 1) currentPage = 1;
+                }catch (NumberFormatException e){
+                    currentPage = 1;
                 }
-                books = filtered;
             }
+
+            // 2. Invoke BookService
+            List<BookDTO> books = bookService.searchBooksByPage(search, currentPage, recordsPerPage);
+            int totalPages = bookService.getTotalPages(search, recordsPerPage);
+            if(totalPages == 0) totalPages = 1;
+
+            // 3. Set attributes for JSP rendering
             request.setAttribute("bookList", books);
+            request.setAttribute("currentPage", currentPage);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("searchKeyword", search != null ? search : "");
+
             request.getRequestDispatcher("/WEB-INF/admin/book/admin-books.jsp").forward(request, response);
         }catch (Exception e){
             // If list cannot be loaded, return server error.
+            e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot load the book list");
         }
     }

@@ -22,15 +22,23 @@ import java.util.List;
  */
 public class UserDAOImpl implements UserDAO {
     /** List query for admin member-management page. */
-    private static final String QUERY_USERS = "SELECT * FROM `User` ORDER BY username DESC";
+    private static final String QUERY_USERS = "SELECT * FROM User ORDER BY username DESC";
     /** Single-user lookup query by username key. */
-    private static final String QUERY_USERNAME = "SELECT * FROM `User` WHERE username = ?";
+    private static final String QUERY_USERNAME = "SELECT * FROM User WHERE username = ?";
     /** Insert query for new user record. */
-    private static final String INSERT_USER = "INSERT INTO `User` (username, password, first_name, last_name, email, phone, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_USER = "INSERT INTO User (username, password, first_name, last_name, email, phone, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)";
     /** Update query for existing user record. */
-    private static final String UPDATE_USER = "UPDATE `User` SET password = ?, first_name = ?, last_name = ?, email = ?, phone = ?, is_admin = ? WHERE username = ?";
+    private static final String UPDATE_USER = "UPDATE User SET password = ?, first_name = ?, last_name = ?, email = ?, phone = ?, is_admin = ? WHERE username = ?";
     /** Delete query by username key. */
-    private static final String DELETE_USER = "DELETE FROM `User` WHERE username = ?";
+    private static final String DELETE_USER = "DELETE FROM User WHERE username = ?";
+    /** Count query for all members (is_admin = 0). */
+    private static final String COUNT_MEMBERS = "SELECT COUNT(*) FROM `User` WHERE is_admin = 0";
+    /** Count query for searched members. */
+    private static final String COUNT_MEMBERS_SEARCH = "SELECT COUNT(*) FROM `User` WHERE is_admin = 0 AND (LOWER(first_name) LIKE ? OR LOWER(last_name) LIKE ? OR LOWER(email) LIKE ?)";
+    /** Pagination query for all members. */
+    private static final String QUERY_MEMBERS_PAGE = "SELECT * FROM `User` WHERE is_admin = 0 ORDER BY username ASC LIMIT ?, ?";
+    /** Pagination query for searched members. */
+    private static final String QUERY_MEMBERS_PAGE_SEARCH = "SELECT * FROM `User` WHERE is_admin = 0 AND (LOWER(first_name) LIKE ? OR LOWER(last_name) LIKE ? OR LOWER(email) LIKE ?) ORDER BY username ASC LIMIT ?, ?";
 
     /**
      * Gets a JDBC connection from shared data source.
@@ -133,6 +141,74 @@ public class UserDAOImpl implements UserDAO {
             throw new RuntimeException("findByUsername() failed: " + e.getMessage(), e);
         }
         return null;
+    }
+
+    /**
+     * Retrieves a paginated subset of members, optionally filtered by a search keyword.
+     */
+    @Override
+    public List<UserDTO> searchUsersByPage(String keyword, int offset, int limit){
+        List<UserDTO> users = new ArrayList<>();
+        boolean hasSearch = keyword != null && !keyword.trim().isEmpty();
+        String sql = hasSearch ? QUERY_MEMBERS_PAGE_SEARCH : QUERY_MEMBERS_PAGE;
+
+        try(Connection con = getConnection();
+        PreparedStatement ps = con.prepareStatement(sql)){
+
+            int paramIndex = 1;
+
+            // Bind search parameters if a keyword is provided.
+            if(hasSearch){
+                String searchPattern = "%" + keyword.trim().toLowerCase() + "%";
+                ps.setString(paramIndex++, searchPattern);
+                ps.setString(paramIndex++, searchPattern);
+                ps.setString(paramIndex++, searchPattern);
+            }
+
+            // Bind pagination limits.
+            ps.setInt(paramIndex++, offset);
+            ps.setInt(paramIndex, limit);
+
+            try(ResultSet rs = ps.executeQuery()){
+                while(rs.next()){
+                    // Delegate to the shared mapping method.
+                    users.add(mapUser(rs));
+                }
+            }
+        }catch(SQLException | IOException e){
+            throw new RuntimeException("searchUserByPage() failed: " + e.getMessage(), e);
+        }
+        return users;
+    }
+
+    /**
+     * Calculates the total number of members, optionally filtering by a search keyword.
+     * This count is used to determine total pagination pages.
+     */
+    @Override
+    public int countUsersBySearch(String keyword){
+        boolean hasSearch = keyword != null && !keyword.trim().isEmpty();
+        String sql = hasSearch ? COUNT_MEMBERS_SEARCH : COUNT_MEMBERS;
+
+        try(Connection con = getConnection();
+        PreparedStatement ps = con.prepareStatement(sql)){
+
+            if(hasSearch){
+                String searchPattern = "%" + keyword.trim().toLowerCase() + "%";
+                ps.setString(1, searchPattern);
+                ps.setString(2, searchPattern);
+                ps.setString(3, searchPattern);
+            }
+
+            try(ResultSet rs = ps.executeQuery()){
+                if(rs.next()){
+                    return rs.getInt(1);
+                }
+            }
+        }catch(SQLException | IOException e){
+            throw new RuntimeException("countUsersBySearch() failed: " + e.getMessage(), e);
+        }
+        return 0;
     }
 
     /**

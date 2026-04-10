@@ -17,7 +17,7 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="logo">Library Management System</div>
+        <div class="logo"><a href="${pageContext.request.contextPath}/admin">Library Management System</a></div>
         <div class="logout"><a href="${pageContext.request.contextPath}/logout">Logout</a></div>
     </nav>
 
@@ -28,6 +28,7 @@
             <form class="search-bar" method="get" action="${pageContext.request.contextPath}/admin/authors">
                 <input type="text" name="search" class="search-input" placeholder="Search..." value="${param.search}">
                 <button type="submit" class="btn btn-search">Search</button>
+                <a href="?" class="btn btn-secondary">Clear</a>
             </form>
             <div>
                 <a href="${pageContext.request.contextPath}/admin/authors?action=add" class="btn btn-add">Add New Author</a>
@@ -38,8 +39,7 @@
         <%-- Show validation/business error from servlet --%>
         <% String error = (String) request.getAttribute("error");
         if(error != null) { %>
-        <%-- Inline alert + banner both show the same server-side message --%>
-            <script>alert('<%= error %>');</script>
+        <%-- Inline banner show the server-side message --%>
             <div class="error"> <%= error %></div>
         <% } %>
 
