@@ -3,7 +3,6 @@ package com.example.lms.book;
 import DTO.book.AuthorDTO;
 import DTO.book.BookDTO;
 import DTO.book.PublisherDTO;
-import DTO.user.UserDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -29,35 +28,6 @@ public class AdminBooksServlet extends HttpServlet {
     private final BookService bookService = new BookService();
 
     /**
-     * Ensures the request comes from an authenticated admin user.
-     *
-     * @return current login user when authorized; null when response has been handled
-     * @throws IOException when redirect/sendError fails
-     */
-    private UserDTO requireAdmin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // No session -> user must log in first.
-        if(request.getSession(false) == null){
-            response.sendRedirect(request.getContextPath() + "/login");
-            return null;
-        }
-
-        // Session exists but no login identity.
-        UserDTO currentUser = (UserDTO) request.getSession(false).getAttribute("loginUser");
-        if(currentUser == null){
-            response.sendRedirect(request.getContextPath() + "/login");
-            return null;
-        }
-
-        // Authenticated but role is not admin.
-        if(!currentUser.isAdmin()){
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Admin access required");
-            return null;
-        }
-
-        return currentUser;
-    }
-
-    /**
      * Loads book list or handles a delete action.
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -68,9 +38,6 @@ public class AdminBooksServlet extends HttpServlet {
         if(action == null) {
             action = "";
         }
-
-        // Block access for unauthenticated/non-admin users.
-        if(requireAdmin(request, response) == null) return;
 
         try{
             switch (action) {
@@ -176,9 +143,6 @@ public class AdminBooksServlet extends HttpServlet {
         String action = request.getParameter("action");
         if (action == null) action = "";
 
-        // Block access for unauthenticated/non-admin users.
-        if(requireAdmin(request, response) == null) return;
-
         switch (action) {
             case "add-book": {
             // Read form fields for new book creation.
@@ -279,15 +243,5 @@ public class AdminBooksServlet extends HttpServlet {
 
         // Fallback for unknown POST action: render GET flow.
         doGet(request, response);
-    }
-
-    /**
-     * Null-safe helper used by search filter.
-     */
-    private boolean containsIgnoreCase(String value, String query){
-        if(value == null){
-            return false;
-        }
-        return value.toLowerCase().contains(query);
     }
 }

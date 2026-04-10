@@ -21,18 +21,13 @@ public class UserRecordsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-        // 1. Authentication check: ensure user is logged in
-        if(request.getSession(false) == null || request.getSession(false).getAttribute("loginUser") == null){
-            response.sendRedirect(request.getContextPath()+"/login");
-            return;
-        }
         UserDTO currentUser = (UserDTO)request.getSession(false).getAttribute("loginUser");
 
         try{
-            // 2. Fetch borrowing history strictly for the currently logged-in user
+            // 1. Fetch borrowing history strictly for the currently logged-in user
             List<BookUserDTO> records = bookService.getUserBorrowingHistory(currentUser.getUsername());
 
-            // 3. Attach data to request and forward to JSP
+            // 2. Attach data to request and forward to JSP
             request.setAttribute("recordList", records);
             request.getRequestDispatcher("/WEB-INF/user/user-records.jsp").forward(request, response);
 

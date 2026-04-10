@@ -1,17 +1,15 @@
 package com.example.lms;
 
 import DTO.book.BookDTO;
-import DTO.user.UserDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import service.book.BookService;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Servlet handling the reader's main dashboard and book catalog search.
@@ -28,19 +26,13 @@ public class UserDashboardServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 1. Authentication check: ensure session and loginUser exist
-        if(request.getSession(false) == null || request.getSession(false).getAttribute("loginUser") == null){
-            response.sendRedirect(request.getContextPath() + "/login");
-            return;
-        }
-
-        // 2. Retrieve search keyword (if any)
+        // 1. Retrieve search keyword (if any)
         String searchKeyword = request.getParameter("search");
         String pageParam = request.getParameter("page");
 
         if(searchKeyword == null) searchKeyword = "";
 
-        // 3. Setup pagination parameters
+        // 2. Setup pagination parameters
         int currentPage = 1;
         int recordsPerPage = 8; // Display 8 books per page
 
@@ -52,29 +44,17 @@ public class UserDashboardServlet extends HttpServlet {
           }
         }
 
-        // 4. Fetch paginated data and total pages from business layer
+        // 3. Fetch paginated data and total pages from business layer
         List<BookDTO> books = bookService.searchBooksByPage(searchKeyword, currentPage, recordsPerPage);
         int totalPages = bookService.getTotalPages(searchKeyword,recordsPerPage);
 
-        // 5. Attach data to request to render in JSP
+        // 4. Attach data to request to render in JSP
         request.setAttribute("bookList", books);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("searchKeyword", searchKeyword);
 
-        // 6. Forward to the view
+        // 5. Forward to the view
         request.getRequestDispatcher("/WEB-INF/user/user-dashboard.jsp").forward(request, response);
-    }
-
-    /**
-     * Null-safe helper method for case-insensitive string matching.
-     *
-     * @param value the target string to search within
-     * @param query the search keyword
-     * @return true if the target string contains the keyword
-     */
-    private boolean containsIgnoreCase(String value, String query){
-        if(value == null) return false;
-        return value.toLowerCase().contains(query);
     }
 }

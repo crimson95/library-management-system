@@ -232,14 +232,4 @@ public class AdminMembersServlet extends HttpServlet {
                 return;
         }
     }
-
-    /**
-     * Null-safe helper for case-insensitive containment checks.
-     */
-    private boolean containsIgnoreCase(String value, String query) {
-        if (value == null) {
-            return false;
-        }
-        return value.toLowerCase().contains(query);
-    }
 }
