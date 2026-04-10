@@ -98,7 +98,7 @@
         <div class="form-row">
           <div class="form-group">
             <label for="title">Title</label>
-            <input type="text" name="title" id="title" maxlength="50" value="<%= book != null && book.getTitle() != null ? book.getTitle() : "" %>">
+            <input type="text" name="title" id="title" maxlength="100" value="<%= book != null && book.getTitle() != null ? book.getTitle() : "" %>">
           </div>
         </div>
 

@@ -58,20 +58,25 @@ public class UserProfileServlet extends HttpServlet {
 
             // 2. Read updated fields from the form submission.
             String password = request.getParameter("password");
-            String confirmPassword = request.getParameter("confirmPassword");
-            String firstName = request.getParameter("firstName");
-            String lastName = request.getParameter("lastName");
+            String confirmPassword = request.getParameter("confirm_password");
+            String firstName = request.getParameter("first_name");
+            String lastName = request.getParameter("last_name");
             String email = request.getParameter("email");
             String phone = request.getParameter("phone");
 
-            // 3. Update user properties (password is only updated if a new one is provided).
-            if(password != null && !password.trim().isEmpty()){
-                // Validate if both password fields match perfectly
-                if(!password.equals(confirmPassword)){
-                    throw new BusinessValidationException("Passwords do not match. Please try again.");
+            // 3. Strict Password Validation Logic
+            boolean isPasswordFilled = (password != null && !password.trim().isEmpty());
+            boolean isConfirmFilled = (confirmPassword != null && !confirmPassword.trim().isEmpty());
+
+            if(isPasswordFilled || isConfirmFilled){
+                // If the user typed in EITHER field, they must match perfectly.
+                // This prevents the case where 'password' is blank but 'confirm' is accidentally typed.
+                if(password == null || confirmPassword == null || !password.equals(confirmPassword)){
+                    throw new BusinessValidationException("New passwords do not match or one field is empty. Please try again.");
                 }
                 targetUser.setPassword(password);
             }
+
             targetUser.setFirstName(firstName);
             targetUser.setLastName(lastName);
             targetUser.setEmail(email);
@@ -87,10 +92,12 @@ public class UserProfileServlet extends HttpServlet {
             request.setAttribute("successMessage", "Profile successfully updated.");
             request.setAttribute("profileUser", targetUser);
             request.getRequestDispatcher("/WEB-INF/user/user-profile.jsp").forward(request, response);
+
             }catch (BusinessValidationException e){
             // Return to the form with validation error messages.
             request.setAttribute("error", e.getMessage());
             doGet(request, response);
+
         }catch (Exception e){
             e.printStackTrace();
             request.setAttribute("error", "System error while updating profile.");

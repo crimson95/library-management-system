@@ -23,6 +23,11 @@
     </nav>
 
     <div class="container">
+        <% String successMsg = (String) request.getAttribute("successMessage");
+        if(successMsg != null) { %>
+        <div class="success"><%= successMsg %></div>
+        <% } %>
+
         <div class="card">
             <%-- Page header and action buttons --%>
             <div class="header-actions">

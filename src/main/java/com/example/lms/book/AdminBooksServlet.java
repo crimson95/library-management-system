@@ -32,6 +32,10 @@ public class AdminBooksServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        String success = request.getParameter("success");
+        if("add".equals(success)){
+            request.setAttribute("successMessage", "Book and initial copy successfully");
+        }
 
         // Query parameter controls which action this request performs.
         String action = request.getParameter("action");
@@ -171,7 +175,7 @@ public class AdminBooksServlet extends HttpServlet {
 
                 // Service layer validates and persists new book.
                 bookService.addBook(book);
-                response.sendRedirect(request.getContextPath() + "/admin/books");
+                response.sendRedirect(request.getContextPath() + "/admin/books?success=add");
                 return;
 
             } catch (BusinessValidationException e) {

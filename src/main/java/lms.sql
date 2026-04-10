@@ -72,7 +72,7 @@ VALUES ('admin01', 'admin123', 'System', 'Admin', '0000000000', 'admin@lms.com',
 -- 4. Create Book Catalog (linking authors and publishers)
 CREATE TABLE Book (
     ISBN 					VARCHAR(15) PRIMARY KEY,
-    title 					VARCHAR(50) NOT NULL,
+    title 					VARCHAR(100) NOT NULL,
     date_acquired 			DATE 		NOT NULL,
     description 			VARCHAR(500),
     Author_authorID 		INT 		NOT NULL,

@@ -88,7 +88,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="title">Title</label>
-                    <input type="text" name="title" id="title" maxlength="50" placeholder="book title">
+                    <input type="text" name="title" id="title" maxlength="100" placeholder="book title">
                 </div>
             </div>
 

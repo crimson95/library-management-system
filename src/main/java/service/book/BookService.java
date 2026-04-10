@@ -4,7 +4,6 @@ import DAO.book.*;
 import DTO.book.*;
 import service.BusinessValidationException;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -122,6 +121,10 @@ public class BookService {
         }
         // Persist after validation passes.
         bookDAO.addBook(bookDTO);
+
+        BookInfoDTO firstCopy = new BookInfoDTO(0, "New", BookInfoDTO.STATUS_AVAILABLE, bookDTO.getIsbn());
+
+        bookInfoDAO.addBookInfo(firstCopy);
     }
 
     /**
@@ -180,7 +183,19 @@ public class BookService {
         if (isbn == null ||isbn.trim().isEmpty()) {
             throw new BusinessValidationException("ISBN cannot be blank.");
         }
-        // Delete by ISBN key.
+
+        List<BookInfoDTO> copies = bookInfoDAO.getBookInfoByISBN(isbn.trim());
+        for (BookInfoDTO copy : copies) {
+            if(copy.getStatus() == BookInfoDTO.STATUS_BORROWED){
+                throw new BusinessValidationException("Cannot delete: One or more copies are currently borrowed.");
+            }
+        }
+
+        // Delete book copies
+        for(BookInfoDTO copy : copies){
+            bookInfoDAO.deleteBookInfo(copy.getBookID());
+        }
+        // Delete book catalog by ISBN key.
         bookDAO.deleteBook(isbn.trim());
     }
 

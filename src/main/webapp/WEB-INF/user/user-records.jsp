@@ -13,7 +13,7 @@
 <head>
     <meta charset="utf-8">
     <title>My Borrowing Records</title>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/user.css?v=20260409">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/user.css">
 </head>
 <body>
     <nav class="navbar">
