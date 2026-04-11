@@ -101,7 +101,11 @@
                                     String confirmMsg = "return confirm('Are you sure to delete { " + safeTitle + " }? (ISBN: " + book.getIsbn() + ")');";
                                     String deleteUrl = request.getContextPath() + "/admin/books?action=delete&isbn=" + book.getIsbn();
                                 %>
-                                <a href="<%= deleteUrl %>" class="btn btn-delete" onclick="<%= confirmMsg %>">Delete</a>
+                                <form method="post" action="${pageContext.request.contextPath}/admin/books" style="display:inline;">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="isbn" value="<%= book.getIsbn() %>">
+                                    <button type="submit" class="btn btn-delete" onclick="<%= confirmMsg %>">Delete</button>
+                                </form>
                             </div>
 
                             <%-- Bottom row: Manage Copies button (Full width) --%>

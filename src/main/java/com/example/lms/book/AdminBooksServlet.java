@@ -32,16 +32,29 @@ public class AdminBooksServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+
+        // 1. Correctly handle success flags with breaks to avoid fall-through
         String success = request.getParameter("success");
-        if("add".equals(success)){
-            request.setAttribute("successMessage", "Book and initial copy successfully");
+        if(success != null) {
+            switch (success) {
+                case "add": {
+                    request.setAttribute("successMessage", "Book and initial copy successfully");
+                    break;
+                }
+                case "update": {
+                    request.setAttribute("successMessage", "Book update successfully");
+                    break;
+                }
+                case "delete": {
+                    request.setAttribute("successMessage", "Book delete successfully");
+                    break;
+                }
+            }
         }
 
         // Query parameter controls which action this request performs.
         String action = request.getParameter("action");
-        if(action == null) {
-            action = "";
-        }
+        if(action == null) action = "";
 
         try{
             switch (action) {
@@ -147,79 +160,50 @@ public class AdminBooksServlet extends HttpServlet {
         String action = request.getParameter("action");
         if (action == null) action = "";
 
-        switch (action) {
-            case "add-book": {
-            // Read form fields for new book creation.
-            String isbn = request.getParameter("isbn");
-            String title = request.getParameter("title");
-            String dateAcquiredRaw = request.getParameter("date_acquired");
-            String description = request.getParameter("description");
-            String authorIDRaw = request.getParameter("authorID");
-            String publisherIDRaw = request.getParameter("publisherID");
+        try{
+            switch (action) {
+                case "add-book": {
+                    // Read form fields for new book creation.
+                    String isbn = request.getParameter("isbn");
+                    String title = request.getParameter("title");
+                    String dateAcquiredRaw = request.getParameter("date_acquired");
+                    String description = request.getParameter("description");
+                    String authorIDRaw = request.getParameter("authorID");
+                    String publisherIDRaw = request.getParameter("publisherID");
 
-            try {
-                int authorID = Integer.parseInt(authorIDRaw);
-                int publisherID = Integer.parseInt(publisherIDRaw);
-                Date dateAcquired = Date.valueOf(dateAcquiredRaw);
+                    int authorID = Integer.parseInt(authorIDRaw);
+                    int publisherID = Integer.parseInt(publisherIDRaw);
+                    Date dateAcquired = Date.valueOf(dateAcquiredRaw);
 
-                BookDTO book = new BookDTO(
-                    isbn,
-                    title,
-                    dateAcquired,
-                    description,
-                    authorID,
-                    null,
-                    publisherID,
-                    null
-                );
+                    BookDTO book = new BookDTO(
+                            isbn, title, dateAcquired, description, authorID, null, publisherID, null
+                    );
 
-                // Service layer validates and persists new book.
-                bookService.addBook(book);
-                response.sendRedirect(request.getContextPath() + "/admin/books?success=add");
-                return;
+                    // Service layer validates and persists new book.
+                    bookService.addBook(book);
+                    response.sendRedirect(request.getContextPath() + "/admin/books?success=add");
+                    return;
+                }
 
-            } catch (BusinessValidationException e) {
-                request.setAttribute("error", e.getMessage());
-            } catch (IllegalArgumentException e) {
-                request.setAttribute("error", "Invalid date or numeric value");
-            } catch (Exception e) {
-                request.setAttribute("error", "Unable to create book");
-            }
+                case "update": {
+                    String isbn = request.getParameter("isbn");
+                    String title = request.getParameter("title");
+                    String dateAcquiredRaw = request.getParameter("date_acquired");
+                    String description = request.getParameter("description");
+                    String authorIDRaw = request.getParameter("authorID");
+                    String publisherIDRaw = request.getParameter("publisherID");
 
-            // Reload dropdown data before returning to add form.
-            request.setAttribute("authorList", bookService.findAllAuthors());
-            request.setAttribute("publisherList", bookService.findAllPublishers());
-            request.getRequestDispatcher("/WEB-INF/admin/book/admin-books-add.jsp").forward(request, response);
-            return;
-            }
-
-            case "update": {
-                String isbn = request.getParameter("isbn");
-                String title = request.getParameter("title");
-                String dateAcquiredRaw = request.getParameter("date_acquired");
-                String description = request.getParameter("description");
-                String authorIDRaw = request.getParameter("authorID");
-                String publisherIDRaw = request.getParameter("publisherID");
-
-                try {
                     int authorID = Integer.parseInt(authorIDRaw);
                     int publisherID = Integer.parseInt(publisherIDRaw);
                     Date dateAcquired = Date.valueOf(dateAcquiredRaw);
 
                     BookDTO existingBook = bookService.findByISBN(isbn);
 
-                    if(existingBook == null){
+                    if (existingBook == null) {
                         // Keep entered values so user does not lose form states.
                         request.setAttribute("error", "Book does not exist");
                         request.setAttribute("book", new BookDTO(
-                            isbn,
-                            title,
-                            dateAcquired,
-                            description,
-                            authorID,
-                            null,
-                            publisherID,
-                            null
+                                isbn, title, dateAcquired, description, authorID, null, publisherID, null
                         ));
                         request.getRequestDispatcher("/WEB-INF/admin/book/admin-books-edit.jsp").forward(request, response);
                         return;
@@ -233,19 +217,30 @@ public class AdminBooksServlet extends HttpServlet {
 
                     // Persist updates after mapping request fields to DTO.
                     bookService.updateBook(existingBook);
-                    response.sendRedirect(request.getContextPath() + "/admin/books");
+                    response.sendRedirect(request.getContextPath() + "/admin/books?success=update");
                     return;
+                }
 
-                }catch (BusinessValidationException e){
-                    e.printStackTrace();
-                    request.setAttribute("error", "Update failed: " + e.getMessage());
-                }catch (IllegalArgumentException e){
-                    request.setAttribute("error", "Invalid date or numeric value");
+                case "delete": {
+                    String isbn = request.getParameter("isbn");
+                    bookService.deleteBook(isbn);
+                    response.sendRedirect(request.getContextPath() + "/admin/books?success=delete");
+                    return;
+                }
+
+                default: {
+                    response.sendRedirect(request.getContextPath() + "/admin/books");
+                    break;
                 }
             }
+        }catch(BusinessValidationException e){
+            request.setAttribute("error", e.getMessage());
+            doGet(request, response);
+        }catch(Exception e){
+            e.printStackTrace();
+            request.setAttribute("error", "System error: " + e.getMessage());
+            // Fallback for unknown POST action: render GET flow.
+            doGet(request, response);
         }
-
-        // Fallback for unknown POST action: render GET flow.
-        doGet(request, response);
     }
 }
