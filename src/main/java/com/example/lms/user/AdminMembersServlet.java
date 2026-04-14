@@ -37,6 +37,24 @@ public class AdminMembersServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
+        String success = request.getParameter("success");
+        if(success != null) {
+            switch(success) {
+                case "add":{
+                    request.setAttribute("successMessage", "User added successfully.");
+                    break;
+                }
+                case "update":{
+                    request.setAttribute("successMessage", "User updated successfully.");
+                    break;
+                }
+                case "delete":{
+                    request.setAttribute("successMessage", "User deleted successfully.");
+                    break;
+                }
+            }
+        }
+
         // Action selector; empty means "show list page".
         String action = request.getParameter("action");
         if (action == null) action = "";
@@ -154,82 +172,96 @@ public class AdminMembersServlet extends HttpServlet {
             action = "";
         }
 
-        switch (action) {
-            case "add-admin": {
-                // Read form fields for new admin account creation.
-                String username = request.getParameter("username");
-                String password = request.getParameter("password");
-                String firstName = request.getParameter("first_name");
-                String lastName = request.getParameter("last_name");
-                String email = request.getParameter("email");
-                String phone = request.getParameter("phone");
+        try{
+            switch (action) {
+                case "add-admin": {
+                    // Read form fields for new admin account creation.
+                    String username = request.getParameter("username");
+                    String password = request.getParameter("password");
+                    String firstName = request.getParameter("first_name");
+                    String lastName = request.getParameter("last_name");
+                    String email = request.getParameter("email");
+                    String phone = request.getParameter("phone");
 
-                // Build DTO instance and delegate validation/persistence to service layer.
-                Admin admin = new Admin(username, password, firstName, lastName, email, phone);
+                    // Build DTO instance and delegate validation/persistence to service layer.
+                    Admin admin = new Admin(username, password, firstName, lastName, email, phone);
 
-                try {
-                    userService.addUser(admin);
-                    response.sendRedirect(request.getContextPath() + "/admin/members");
-                    return;
-                } catch (BusinessValidationException e) {
-                    // Keep user on form page and show validation message.
-                    request.setAttribute("error", e.getMessage());
-                    request.getRequestDispatcher("/WEB-INF/admin/user/admin-members-add.jsp").forward(request, response);
-                    return;
+                    try {
+                        userService.addUser(admin);
+                        response.sendRedirect(request.getContextPath() + "/admin/members?success=add");
+                        return;
+                    } catch (BusinessValidationException e) {
+                        // Keep user on form page and show validation message.
+                        request.setAttribute("error", e.getMessage());
+                        request.getRequestDispatcher("/WEB-INF/admin/user/admin-members-add.jsp").forward(request, response);
+                        return;
+                    }
                 }
-            }
 
-            case "update": {
-                // Read editable fields from form submission.
-                String username = request.getParameter("username");
-                String password = request.getParameter("password");
-                String firstName = request.getParameter("first_name");
-                String lastName = request.getParameter("last_name");
-                String email = request.getParameter("email");
-                String phone = request.getParameter("phone");
+                case "update": {
+                    // Read editable fields from form submission.
+                    String username = request.getParameter("username");
+                    String password = request.getParameter("password");
+                    String firstName = request.getParameter("first_name");
+                    String lastName = request.getParameter("last_name");
+                    String email = request.getParameter("email");
+                    String phone = request.getParameter("phone");
 
-                try{
-                    UserDTO existingUser = userService.findUserByUsername(username);
+                    try{
+                        UserDTO existingUser = userService.findUserByUsername(username);
 
-                    if (existingUser == null) {
-                        // Keep entered values so user does not lose form state.
-                        request.setAttribute("error", "User not found");
-                        request.setAttribute("user", new Admin(username, "", firstName, lastName, email, phone));
+                        if (existingUser == null) {
+                            // Keep entered values so user does not lose form state.
+                            request.setAttribute("error", "User not found");
+                            request.setAttribute("user", new Admin(username, "", firstName, lastName, email, phone));
+                            request.getRequestDispatcher("/WEB-INF/admin/user/admin-members-edit.jsp").forward(request, response);
+                            return;
+                        }
+
+                        // Password is optional in edit form; only update when user entered a new one.
+                        if (password != null && !password.trim().isEmpty()) {
+                            existingUser.setPassword(password);
+                        }
+                        existingUser.setFirstName(firstName);
+                        existingUser.setLastName(lastName);
+                        existingUser.setEmail(email);
+                        existingUser.setPhone(phone);
+
+                        userService.updateUser(existingUser);
+                        response.sendRedirect(request.getContextPath() + "/admin/members?success=update");
+                        return;
+
+                    }catch (BusinessValidationException e){
+                        // Validation failed: reopen edit form with error message.
+                        request.setAttribute("error", e.getMessage());
+                        try{
+                            UserDTO tempUser = userService.findUserByUsername(username);
+                            request.setAttribute("user", tempUser);
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                         request.getRequestDispatcher("/WEB-INF/admin/user/admin-members-edit.jsp").forward(request, response);
                         return;
                     }
+                }
 
-                    // Password is optional in edit form; only update when user entered a new one.
-                    if (password != null && !password.trim().isEmpty()) {
-                        existingUser.setPassword(password);
-                    }
-                    existingUser.setFirstName(firstName);
-                    existingUser.setLastName(lastName);
-                    existingUser.setEmail(email);
-                    existingUser.setPhone(phone);
-
-                    userService.updateUser(existingUser);
-                    response.sendRedirect(request.getContextPath() + "/admin/members");
-                    return;
-
-                }catch (BusinessValidationException e){
-                    // Validation failed: reopen edit form with error message.
-                    request.setAttribute("error", e.getMessage());
-                    try{
-                        UserDTO tempUser = userService.findUserByUsername(username);
-                        request.setAttribute("user", tempUser);
-                    }catch (Exception ex){
-                        ex.printStackTrace();
-                    }
-                    request.getRequestDispatcher("/WEB-INF/admin/user/admin-members-edit.jsp").forward(request, response);
+                case "delete": {
+                    String username = request.getParameter("username");
+                    userService.deleteUser(username);
+                    response.sendRedirect(request.getContextPath() + "/admin/members?success=delete");
                     return;
                 }
-            }
 
-            default:
-                // Unknown action falls back to GET list flow.
-                doGet(request, response);
-                return;
+                default: {
+                    response.sendRedirect(request.getContextPath() + "/admin/members");
+                    break;
+                }
+            }
+        }catch(BusinessValidationException e){
+            request.setAttribute("error", e.getMessage());
+            doGet(request, response);
+        }catch (Exception e){
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 }

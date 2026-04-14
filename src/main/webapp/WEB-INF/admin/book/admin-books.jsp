@@ -28,6 +28,13 @@
         <div class="success"><%= successMsg %></div>
         <% } %>
 
+        <%-- Show validation/business error from servlet --%>
+        <% String error = (String) request.getAttribute("error");
+            if(error != null) { %>
+        <%-- Inline banner show the same server-side message --%>
+        <div class="error"> <%= error %></div>
+        <% } %>
+
         <div class="card">
             <%-- Page header and action buttons --%>
             <div class="header-actions">
@@ -45,14 +52,6 @@
                     <a href="${pageContext.request.contextPath}/admin" class="btn">Back to Dashboard</a>
                 </div>
             </div>
-
-        <%-- Show validation/business error from servlet --%>
-        <% String error = (String) request.getAttribute("error");
-        if(error != null) { %>
-        <%-- Inline alert + banner both show the same server-side message --%>
-            <script>alert('<%= error %>');</script>
-            <div class="error"> <%= error %></div>
-        <% } %>
 
             <%-- Book list table --%>
             <table>

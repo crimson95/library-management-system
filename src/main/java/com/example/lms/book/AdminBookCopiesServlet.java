@@ -7,6 +7,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import service.BusinessValidationException;
 import service.book.BookService;
 
 import java.awt.print.Book;
@@ -31,6 +32,26 @@ public class AdminBookCopiesServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+
+        String success = request.getParameter("success");
+        if(success != null) {
+            switch(success) {
+                case "add":{
+                    request.setAttribute("successMessage", "Book copy add successfully");
+                    break;
+                }
+                case "update":{
+                    request.setAttribute("successMessage", "Book copy update successfully");
+                    break;
+                }
+                case "delete":{
+                    request.setAttribute("successMessage", "Book copy delete successfully");
+                    break;
+                }
+            }
+        }
+
         String isbn = request.getParameter("isbn");
         if(isbn == null || isbn.trim().isEmpty()) {
             // Redirect to books list if ISBN is missing
@@ -113,50 +134,70 @@ public class AdminBookCopiesServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
-        switch (action) {
-            case "add":{
-                // Process the addition of a new book copy
-                String isbn = request.getParameter("isbn");
-                String condition = request.getParameter("condition");
-                String statusRaw = request.getParameter("status");
+        if (action == null) action = "";
+        try{
+            switch (action) {
+                case "add":{
+                    // Process the addition of a new book copy
+                    String isbn = request.getParameter("isbn");
+                    String condition = request.getParameter("condition");
+                    String statusRaw = request.getParameter("status");
 
-                try{
-                    int status = Integer.parseInt(statusRaw);
-                    BookInfoDTO newCopy = new BookInfoDTO(0, condition, status, isbn);
-                    bookService.addBookCopy(newCopy);
+                    try{
+                        int status = Integer.parseInt(statusRaw);
+                        BookInfoDTO newCopy = new BookInfoDTO(0, condition, status, isbn);
+                        bookService.addBookCopy(newCopy);
 
-                    response.sendRedirect(request.getContextPath() + "/admin/book-copies?isbn=" + isbn);
+                        response.sendRedirect(request.getContextPath() + "/admin/book-copies?isbn=" + isbn + "&success=add");
+                        return;
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Can not add the copy.");
+                    }
+                }
+
+                case "update":{
+                    // Process the update of an existing book copy
+                    String editIsbn = request.getParameter("isbn");
+                    String editCondition = request.getParameter("condition");
+                    String editStatusRaw = request.getParameter("status");
+                    String editBookIDRaw = request.getParameter("bookID");
+
+                    try{
+                        int editStatus = Integer.parseInt(editStatusRaw);
+                        int editBookID = Integer.parseInt(editBookIDRaw);
+
+                        BookInfoDTO updateCopy = new BookInfoDTO(editBookID, editCondition, editStatus, editIsbn);
+                        bookService.updateBookCopy(updateCopy);
+                        response.sendRedirect(request.getContextPath() + "/admin/book-copies?isbn=" + editIsbn + "&success=update");
+                        return;
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Can not update the copy.");
+                        return;
+                    }
+                }
+
+                case "delete":{
+                    int bookID = Integer.parseInt(request.getParameter("bookID"));
+                    String editIsbn = request.getParameter("isbn");
+                    bookService.deleteBookCopy(bookID);
+                    response.sendRedirect(request.getContextPath() + "/admin/book-copies?isbn=" + editIsbn +  "&success=delete");
                     return;
-                }catch (Exception e){
-                    e.printStackTrace();
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Can not add the copy.");
+                }
+
+                default:{
+                    response.sendRedirect(request.getContextPath() + "/admin/book-copies");
+                    break;
                 }
             }
-
-            case "update":{
-                // Process the update of an existing book copy
-                String editIsbn = request.getParameter("isbn");
-                String editCondition = request.getParameter("condition");
-                String editStatusRaw = request.getParameter("status");
-                String editBookIDRaw = request.getParameter("bookID");
-
-                try{
-                    int editStatus = Integer.parseInt(editStatusRaw);
-                    int editBookID = Integer.parseInt(editBookIDRaw);
-
-                    BookInfoDTO updateCopy = new BookInfoDTO(editBookID, editCondition, editStatus, editIsbn);
-                    bookService.updateBookCopy(updateCopy);
-
-                    response.sendRedirect(request.getContextPath() + "/admin/book-copies?isbn=" + editIsbn);
-                    return;
-                }catch (Exception e){
-                    e.printStackTrace();
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Can not update the copy.");
-                }
-                break;
-            }
+        }catch (BusinessValidationException e){
+            request.setAttribute("error", e.getMessage());
+            doGet(request, response);
+        }catch (Exception e){
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-        doGet(request, response);
     }
 }

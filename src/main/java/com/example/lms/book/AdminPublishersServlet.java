@@ -29,6 +29,26 @@ public class AdminPublishersServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        response.setContentType("text/html;charset=UTF-8");
+
+        String success = request.getParameter("success");
+        if(success != null) {
+            switch(success) {
+                case "add":{
+                    request.setAttribute("successMessage", "Publisher add successfully");
+                    break;
+                }
+                case "update":{
+                    request.setAttribute("successMessage", "Publisher update successfully");
+                    break;
+                }
+                case "delete":{
+                    request.setAttribute("successMessage", "Publisher delete successfully");
+                    break;
+                }
+            }
+        }
+
         //Action-driven routing from query string.
         String action = request.getParameter("action");
         if (action == null) action = "";
@@ -110,43 +130,62 @@ public class AdminPublishersServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
         if (action == null) action = "";
-        switch (action){
-            case "add":{
-                // Create publisher from submitted form fields.
-                String publisherName = request.getParameter("publisher_name");
+        try{
+            switch (action){
+                case "add":{
+                    // Create publisher from submitted form fields.
+                    String publisherName = request.getParameter("publisher_name");
 
-                try{
-                    PublisherDTO newPublisher = new PublisherDTO(0, publisherName);
-                    bookService.addPublisher(newPublisher);
-                    response.sendRedirect(request.getContextPath() + "/admin/publishers");
-                    return;
-                }catch (BusinessValidationException e){
-                    request.setAttribute("error", e.getMessage());
-                    request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publishers-add.jsp").forward(request, response);
+                    try{
+                        PublisherDTO newPublisher = new PublisherDTO(0, publisherName);
+                        bookService.addPublisher(newPublisher);
+                        response.sendRedirect(request.getContextPath() + "/admin/publishers?success=add");
+                        return;
+                    }catch (BusinessValidationException e){
+                        request.setAttribute("error", e.getMessage());
+                        request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publishers-add.jsp").forward(request, response);
+                        return;
+                    }
+                }
+
+                case "update":{
+                    // Update existing publisher from submitted form fields.
+                    String publisherIDRaw = request.getParameter("publisherID");
+                    String publisherName = request.getParameter("publisher_name");
+
+                    try{
+                        int publisherID = Integer.parseInt(publisherIDRaw);
+                        PublisherDTO updatePublisher = new PublisherDTO(publisherID, publisherName);
+                        bookService.updatePublisher(updatePublisher);
+                        response.sendRedirect(request.getContextPath() + "/admin/publishers?success=update");
+                        return;
+                    }catch (BusinessValidationException e){
+                        request.setAttribute("error", e.getMessage());
+                        request.setAttribute("publisher", new PublisherDTO(Integer.parseInt(publisherIDRaw), publisherName));
+                        request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publishers-edit.jsp").forward(request, response);
+                        return;
+                    }
+                }
+
+                case "delete":{
+                    int publisherID = Integer.parseInt(request.getParameter("publisherID"));
+                    bookService.deletePublisher(publisherID);
+                    response.sendRedirect(request.getContextPath() + "/admin/publishers?success=delete");
                     return;
                 }
-            }
 
-            case "update":{
-                // Update existing publisher from submitted form fields.
-                String publisherIDRaw = request.getParameter("publisherID");
-                String publisherName = request.getParameter("publisher_name");
-
-                try{
-                    int publisherID = Integer.parseInt(publisherIDRaw);
-                    PublisherDTO updatePublisher = new PublisherDTO(publisherID, publisherName);
-                    bookService.updatePublisher(updatePublisher);
+                default:{
                     response.sendRedirect(request.getContextPath() + "/admin/publishers");
-                    return;
-                }catch (BusinessValidationException e){
-                    request.setAttribute("error", e.getMessage());
-                    request.setAttribute("publisher", new PublisherDTO(Integer.parseInt(publisherIDRaw), publisherName));
-                    request.getRequestDispatcher("/WEB-INF/admin/publisher/admin-publishers-edit.jsp").forward(request, response);
-                    return;
+                    break;
                 }
             }
+        }catch (BusinessValidationException e){
+            request.setAttribute("error", e.getMessage());
+            doGet(request, response);
+        }catch (Exception e){
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-        doGet(request, response);
     }
 
     /**

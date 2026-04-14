@@ -31,14 +31,14 @@ public class UserDAOImpl implements UserDAO {
     private static final String UPDATE_USER = "UPDATE User SET password = ?, first_name = ?, last_name = ?, email = ?, phone = ?, is_admin = ? WHERE username = ?";
     /** Delete query by username key. */
     private static final String DELETE_USER = "DELETE FROM User WHERE username = ?";
-    /** Count query for all members (is_admin = 0). */
-    private static final String COUNT_MEMBERS = "SELECT COUNT(*) FROM `User` WHERE is_admin = 0";
-    /** Count query for searched members. */
-    private static final String COUNT_MEMBERS_SEARCH = "SELECT COUNT(*) FROM `User` WHERE is_admin = 0 AND (LOWER(first_name) LIKE ? OR LOWER(last_name) LIKE ? OR LOWER(email) LIKE ?)";
-    /** Pagination query for all members. */
-    private static final String QUERY_MEMBERS_PAGE = "SELECT * FROM `User` WHERE is_admin = 0 ORDER BY username ASC LIMIT ?, ?";
-    /** Pagination query for searched members. */
-    private static final String QUERY_MEMBERS_PAGE_SEARCH = "SELECT * FROM `User` WHERE is_admin = 0 AND (LOWER(first_name) LIKE ? OR LOWER(last_name) LIKE ? OR LOWER(email) LIKE ?) ORDER BY username ASC LIMIT ?, ?";
+    /** Count query for all users in admin management. */
+    private static final String COUNT_USERS = "SELECT COUNT(*) FROM `User`";
+    /** Count query for searched users in admin management. */
+    private static final String COUNT_USERS_SEARCH = "SELECT COUNT(*) FROM `User` WHERE LOWER(first_name) LIKE ? OR LOWER(last_name) LIKE ? OR LOWER(email) LIKE ?";
+    /** Pagination query for all users in admin management. */
+    private static final String QUERY_USERS_PAGE = "SELECT * FROM `User` ORDER BY username ASC LIMIT ?, ?";
+    /** Pagination query for searched users in admin management. */
+    private static final String QUERY_USERS_PAGE_SEARCH = "SELECT * FROM `User` WHERE LOWER(first_name) LIKE ? OR LOWER(last_name) LIKE ? OR LOWER(email) LIKE ? ORDER BY username ASC LIMIT ?, ?";
 
     /**
      * Gets a JDBC connection from shared data source.
@@ -150,7 +150,7 @@ public class UserDAOImpl implements UserDAO {
     public List<UserDTO> searchUsersByPage(String keyword, int offset, int limit){
         List<UserDTO> users = new ArrayList<>();
         boolean hasSearch = keyword != null && !keyword.trim().isEmpty();
-        String sql = hasSearch ? QUERY_MEMBERS_PAGE_SEARCH : QUERY_MEMBERS_PAGE;
+        String sql = hasSearch ? QUERY_USERS_PAGE_SEARCH : QUERY_USERS_PAGE;
 
         try(Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql)){
@@ -188,7 +188,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public int countUsersBySearch(String keyword){
         boolean hasSearch = keyword != null && !keyword.trim().isEmpty();
-        String sql = hasSearch ? COUNT_MEMBERS_SEARCH : COUNT_MEMBERS;
+        String sql = hasSearch ? COUNT_USERS_SEARCH : COUNT_USERS;
 
         try(Connection con = getConnection();
         PreparedStatement ps = con.prepareStatement(sql)){

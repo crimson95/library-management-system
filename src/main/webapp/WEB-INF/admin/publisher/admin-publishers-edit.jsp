@@ -43,8 +43,8 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="publisher">Publisher Name</label>
-                    <input type="text" name="publisher" id="publisher" maxlength="30" value="<%= publisher != null && publisher.getPublisherName() != null ? publisher.getPublisherName() : "" %>" />
+                    <label for="publisher_name">Publisher Name</label>
+                    <input type="text" name="publisher_name" id="publisher_name" maxlength="30" value="<%= publisher != null && publisher.getPublisherName() != null ? publisher.getPublisherName() : "" %>" />
                 </div>
             </div>
 

@@ -29,6 +29,11 @@
         <%-- Retrieve the book details passed from the servlet --%>
         <% BookDTO book = (BookDTO) request.getAttribute("book"); %>
 
+        <% String successMsg = (String) request.getAttribute("successMessage");
+            if(successMsg != null) { %>
+        <div class="success"><%= successMsg %></div>
+        <% } %>
+
         <%-- Show validation/business error from servlet --%>
         <% String error = (String) request.getAttribute("error");
         if(error != null) { %>
@@ -94,9 +99,14 @@
                     <td>
                         <%-- Edit and Delete actions for individual copy --%>
                         <a href="${pageContext.request.contextPath}/admin/book-copies?action=update&bookID=<%= copy.getBookID() %>&isbn=<%= book.getIsbn() %>" class="btn btn-edit">Edit</a>
-                        <a href="${pageContext.request.contextPath}/admin/book-copies?action=delete&bookID=<%= copy.getBookID() %>&isbn=<%= book.getIsbn() %>"
-                           class="btn btn-delete" onclick="return confirm('Are you sure to delete this copy ' +
-                                '(ID: #<%= copy.getBookID() %>)?');">Delete</a>
+                        <form method="post" action="${pageContext.request.contextPath}/admin/book-copies"
+                              style="display:inline;">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="bookID" value="<%= copy.getBookID() %>">
+                            <input type="hidden" name="isbn" value="<%= book.getIsbn() %>">
+                            <button type="submit" class="btn btn-delete"
+                                    onclick="return confirm('Delete book copy: <%= copy.getBookID() %>?');">Delete</button>
+                        </form>
                     </td>
                 </tr>
 

@@ -22,6 +22,18 @@
   </nav>
 
 <div class="container">
+  <% String successMsg = (String) request.getAttribute("successMessage");
+    if (successMsg != null) { %>
+  <div class="success"><%= successMsg %></div>
+  <% } %>
+
+  <%-- Show validation/business error from servlet --%>
+  <% String error = (String) request.getAttribute("error");
+    if(error != null) { %>
+  <%-- Inline banner show the server-side message --%>
+  <div class="error"> <%= error %></div>
+  <% } %>
+
   <div class="card">
     <div class="header-actions">
       <h2>Publisher Management</h2>
@@ -35,13 +47,6 @@
         <a href="${pageContext.request.contextPath}/admin/books" class="btn">Back to Book Management</a>
       </div>
     </div>
-
-    <%-- Show validation/business error from servlet --%>
-    <% String error = (String) request.getAttribute("error");
-    if(error != null) { %>
-    <%-- Inline banner show the server-side message --%>
-      <div class="error"> <%= error %></div>
-    <% } %>
 
     <table>
       <thead>
@@ -64,7 +69,13 @@
         <td>
           <%-- Edit and Delete actions for publisher --%>
           <a href="${pageContext.request.contextPath}/admin/publishers?action=update&publisherID=<%= publisher.getPublisherID() %>" class="btn btn-edit">Edit</a>
-          <a href="${pageContext.request.contextPath}/admin/publishers?action=delete&publisherID=<%= publisher.getPublisherID() %>" class="btn btn-delete" onclick="return confirm('Delete publisher: <%= publisher.getPublisherName().replace("'","\\'") %>?');">Delete</a>
+          <form method="post" action="${pageContext.request.contextPath}/admin/publishers"
+                style="display:inline;">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="publisherID" value="<%= publisher.getPublisherID() %>">
+            <button type="submit" class="btn btn-delete"
+                    onclick="return confirm('Delete publisher: <%= publisher.getPublisherName() %>?');">Delete</button>
+          </form>
         </td>
       </tr>
       <%

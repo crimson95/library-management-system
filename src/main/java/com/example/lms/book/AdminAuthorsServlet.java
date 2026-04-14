@@ -27,6 +27,26 @@ public class AdminAuthorsServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+
+        String success = request.getParameter("success");
+        if(success != null) {
+            switch(success) {
+                case "add":{
+                    request.setAttribute("successMessage", "Author add successfully");
+                    break;
+                }
+                case "update":{
+                    request.setAttribute("successMessage", "Author update successfully");
+                    break;
+                }
+                case "delete":{
+                    request.setAttribute("successMessage", "Author delete successfully");
+                    break;
+                }
+            }
+        }
+
         // Action-driven routing from query string.
         String action = request.getParameter("action");
         if (action == null) action = "";
@@ -107,45 +127,64 @@ public class AdminAuthorsServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
         if (action == null) action = "";
-        switch (action){
-            case "add":{
-                // Create author from submitted form fields.
-                String firstName = request.getParameter("first_name");
-                String lastName = request.getParameter("last_name");
+        try{
+            switch (action){
+                case "add":{
+                    // Create author from submitted form fields.
+                    String firstName = request.getParameter("first_name");
+                    String lastName = request.getParameter("last_name");
 
-                try{
-                    AuthorDTO newAuthor = new AuthorDTO(0, firstName, lastName);
-                    bookService.addAuthor(newAuthor);
-                    response.sendRedirect(request.getContextPath() + "/admin/authors");
-                    return;
-                }catch (BusinessValidationException e){
-                    request.setAttribute("error", e.getMessage());
-                    request.getRequestDispatcher("/WEB-INF/admin/author/admin-authors-add.jsp").forward(request, response);
+                    try{
+                        AuthorDTO newAuthor = new AuthorDTO(0, firstName, lastName);
+                        bookService.addAuthor(newAuthor);
+                        response.sendRedirect(request.getContextPath() + "/admin/authors?success=add");
+                        return;
+                    }catch (BusinessValidationException e){
+                        request.setAttribute("error", e.getMessage());
+                        request.getRequestDispatcher("/WEB-INF/admin/author/admin-authors-add.jsp").forward(request, response);
+                        return;
+                    }
+                }
+
+                case "update":{
+                    // Update existing author from submitted form fields.
+                    String authorIDRaw = request.getParameter("authorID");
+                    String firstName = request.getParameter("first_name");
+                    String lastName = request.getParameter("last_name");
+
+                    try{
+                        int authorID = Integer.parseInt(authorIDRaw);
+                        AuthorDTO updateAuthor = new AuthorDTO(authorID, firstName, lastName);
+                        bookService.updateAuthor(updateAuthor);
+                        response.sendRedirect(request.getContextPath() + "/admin/authors?success=update");
+                        return;
+                    }catch (BusinessValidationException e){
+                        request.setAttribute("error", e.getMessage());
+                        request.setAttribute("author", new AuthorDTO(Integer.parseInt(authorIDRaw), firstName, lastName));
+                        request.getRequestDispatcher("/WEB-INF/admin/author/admin-authors-edit.jsp").forward(request, response);
+                        return;
+                    }
+                }
+
+                case "delete":{
+                    int authorID = Integer.parseInt(request.getParameter("authorID"));
+                    bookService.deleteAuthor(authorID);
+                    response.sendRedirect(request.getContextPath() + "/admin/authors?success=delete");
                     return;
                 }
-            }
 
-            case "update":{
-                // Update existing author from submitted form fields.
-                String authorIDRaw = request.getParameter("authorID");
-                String firstName = request.getParameter("first_name");
-                String lastName = request.getParameter("last_name");
-
-                try{
-                    int authorID = Integer.parseInt(authorIDRaw);
-                    AuthorDTO updateAuthor = new AuthorDTO(authorID, firstName, lastName);
-                    bookService.updateAuthor(updateAuthor);
+                default:{
                     response.sendRedirect(request.getContextPath() + "/admin/authors");
-                    return;
-                }catch (BusinessValidationException e){
-                    request.setAttribute("error", e.getMessage());
-                    request.setAttribute("author", new AuthorDTO(Integer.parseInt(authorIDRaw), firstName, lastName));
-                    request.getRequestDispatcher("/WEB-INF/admin/author/admin-authors-edit.jsp").forward(request, response);
-                    return;
+                    break;
                 }
             }
+        }catch (BusinessValidationException e){
+            request.setAttribute("error", e.getMessage());
+            doGet(request, response);
+        }catch(Exception e){
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-        doGet(request, response);
     }
 
     /**

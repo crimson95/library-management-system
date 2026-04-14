@@ -23,6 +23,18 @@
     </nav>
 
     <div class="container">
+        <% String successMsg = (String) request.getAttribute("successMessage");
+            if (successMsg != null) { %>
+        <div class="success"><%= successMsg %></div>
+        <% } %>
+
+        <%
+            // Error is set by servlet when validation/business rule fails.
+            String error = (String) request.getAttribute("error");
+            if(error != null) { %>
+        <%-- Inline banner show the server-side message --%>
+        <div class="error"><%= error %></div>
+        <%  } %>
         <div class="card">
             <%-- Page title + search + shortcut actions --%>
             <div class="header-actions">
@@ -37,13 +49,7 @@
                     <a href="${pageContext.request.contextPath}/admin" class="btn">Back to Dashboard</a>
                 </div>
             </div>
-        <%
-            // Error is set by servlet when validation/business rule fails.
-            String error = (String) request.getAttribute("error");
-            if(error != null) { %>
-                <%-- Inline banner show the server-side message --%>
-                <div class="error"><%= error %></div>
-        <%  } %>
+
             <%-- User list table --%>
             <table>
                 <thead>
@@ -74,9 +80,13 @@
                     <td>
                         <%-- Open edit form for selected username --%>
                         <a href="${pageContext.request.contextPath}/admin/members?action=update&username=<%= user.getUsername() %>" class="btn btn-edit">Edit</a>
-                        <%-- Trigger delete flow with simple confirm dialog --%>
-                        <a href="${pageContext.request.contextPath}/admin/members?action=delete&username=<%= user.getUsername() %>" class="btn btn-delete"
-                           onclick="return confirm('Are you sure to delete { <%= user.getUsername() %> }?');">Delete</a>
+                        <form method="post" action="${pageContext.request.contextPath}/admin/members"
+                              style="display:inline;">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="username" value="<%= user.getUsername() %>">
+                            <button type="submit" class="btn btn-delete"
+                                    onclick="return confirm('Delete user: <%= user.getUsername() %>?');">Delete</button>
+                        </form>
                     </td>
                 </tr>
                 <%      }
