@@ -2,7 +2,8 @@ package DAO.book;
 
 import DTO.book.BookDTO;
 
-import java.awt.print.Book;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -12,11 +13,22 @@ import java.util.List;
  */
 public interface BookDAO {
     /**
-     * Inserts a new book.
-     *
-     * @param bookDTO book to insert
+     * Adds a new book to the database within an externally managed transaction.
+     * @param con The database connection provided by the Service layer.
+     * WARNING: Do NOT call con.close() within this method.
+     * @param bookDTO The BookDTO object containing the new book's details.
+     * @throws SQLException If a database access error occurs, allowing the Service layer to trigger a rollback.
      */
-    void addBook(BookDTO bookDTO);
+    void addBook(Connection con, BookDTO bookDTO) throws SQLException;
+
+    /**
+     * Deletes a book by ISBN within an externally managed transaction.
+     *
+     * @param con active transaction connection
+     * @param isbn book ISBN
+     * @throws SQLException when delete fails
+     */
+    void deleteBook(Connection con, String isbn) throws SQLException;
 
     /**
      * Updates an existing book.

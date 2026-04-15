@@ -1,8 +1,6 @@
 package com.example.lms.book;
 
-import DTO.book.AuthorDTO;
 import DTO.book.PublisherDTO;
-import jakarta.enterprise.inject.build.compatible.spi.ScannedClasses;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

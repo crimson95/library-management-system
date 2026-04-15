@@ -4,7 +4,6 @@ import DAO.DataSource;
 import DTO.book.AuthorDTO;
 import DTO.book.BookDTO;
 
-import java.awt.print.Book;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -83,12 +82,20 @@ public class BookDAOImpl implements BookDAO{
     }
 
     /**
-     * Inserts a new book.
+     * Adds a new book record to the database using an existing transaction connection.
+     * <p>
+     * This method is part of a larger transaction managed by the Service layer.
+     * It executes the INSERT statement for the book catalog but does NOT commit
+     * or close the provided connection.
+     * </p>
+     *
+     * @param con The active database connection provided by the calling service.
+     * @param bookDTO The BookDTO containing the details of the book to insert.
+     * @throws SQLException If a database access error occurs or the SQL statement fails.
      */
     @Override
-    public void addBook(BookDTO bookDTO) {
-        try(Connection con = getConnection();
-            PreparedStatement ps = con.prepareStatement(INSERT_BOOK)){
+    public void addBook(Connection con, BookDTO bookDTO) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(INSERT_BOOK)) {
             // Bind DTO fields to SQL parameters.
             ps.setString(1, bookDTO.getIsbn());
             ps.setString(2, bookDTO.getTitle());
@@ -97,8 +104,17 @@ public class BookDAOImpl implements BookDAO{
             ps.setInt(5, bookDTO.getAuthorID());
             ps.setInt(6, bookDTO.getPublisherID());
             ps.executeUpdate();
-        }catch (SQLException | IOException e){
-            throw new RuntimeException("addBook() failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Deletes a book by ISBN using an existing transaction connection.
+     */
+    @Override
+    public void deleteBook(Connection con, String isbn) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(DELETE_BOOK)) {
+            ps.setString(1, isbn);
+            ps.executeUpdate();
         }
     }
 

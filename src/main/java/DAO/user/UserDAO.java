@@ -1,6 +1,5 @@
 package DAO.user;
 
-import DTO.book.BookDTO;
 import DTO.user.UserDTO;
 
 import java.util.List;

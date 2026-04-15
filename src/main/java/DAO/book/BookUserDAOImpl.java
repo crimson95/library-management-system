@@ -59,6 +59,21 @@ public class BookUserDAOImpl implements BookUserDAO {
     }
 
     /**
+     * Inserts a new borrow record using an existing transaction connection.
+     */
+    @Override
+    public void addBookUser(Connection con, BookUserDTO bookUserDTO) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(INSERT_BOOKUSER)) {
+            ps.setDate(1, bookUserDTO.getStartDate());
+            ps.setDate(2, bookUserDTO.getReturnDate());
+            ps.setBigDecimal(3, bookUserDTO.getLateFee());
+            ps.setString(4, bookUserDTO.getUsername());
+            ps.setInt(5, bookUserDTO.getBookID());
+            ps.executeUpdate();
+        }
+    }
+
+    /**
      * Updates a borrow record by id.
      */
     @Override
@@ -75,6 +90,22 @@ public class BookUserDAOImpl implements BookUserDAO {
             ps.executeUpdate();
         } catch (SQLException | IOException e) {
             throw new RuntimeException("updateBookUser() failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Updates a borrow record using an existing transaction connection.
+     */
+    @Override
+    public void updateBookUser(Connection con, BookUserDTO bookUserDTO) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(UPDATE_BOOKUSER)) {
+            ps.setDate(1, bookUserDTO.getStartDate());
+            ps.setDate(2, bookUserDTO.getReturnDate());
+            ps.setBigDecimal(3, bookUserDTO.getLateFee());
+            ps.setString(4, bookUserDTO.getUsername());
+            ps.setInt(5, bookUserDTO.getBookID());
+            ps.setInt(6, bookUserDTO.getBookUserID());
+            ps.executeUpdate();
         }
     }
 

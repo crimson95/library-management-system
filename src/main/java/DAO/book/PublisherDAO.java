@@ -2,7 +2,6 @@ package DAO.book;
 
 import java.util.List;
 
-import DTO.book.AuthorDTO;
 import DTO.book.PublisherDTO;
 
 /**

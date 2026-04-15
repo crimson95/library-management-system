@@ -42,19 +42,54 @@ public class BookInfoDAOImpl implements BookInfoDAO {
     }
 
     /**
-     * Inserts a new book copy.
+     * Inserts a new physical copy record using a standalone connection.
      */
     @Override
     public void addBookInfo(BookInfoDTO bookInfoDTO) {
-        try(Connection con = getConnection();
-            PreparedStatement ps = con.prepareStatement(INSERT_BOOKINFO)){
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(INSERT_BOOKINFO)) {
+            ps.setString(1, bookInfoDTO.getCondition());
+            ps.setInt(2, bookInfoDTO.getStatus());
+            ps.setString(3, bookInfoDTO.getBookISBN());
+            ps.executeUpdate();
+        } catch (SQLException | IOException e) {
+            throw new RuntimeException("addBookInfo() failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Inserts a new physical copy record into the database using a shared transaction connection.
+     * <p>
+     * This method participates in an overarching transaction (e.g., adding a book catalog entry
+     * and its first copy simultaneously). It executes the INSERT statement but leaves connection
+     * management (commit/rollback/close) entirely to the caller.
+     * </p>
+     *
+     * @param con The active database connection provided by the calling service.
+     * @param bookInfoDTO The BookInfoDTO containing the copy's condition, status, and associated ISBN.
+     * @throws SQLException If a database access error occurs or the SQL statement fails.
+     */
+    @Override
+    public void addBookInfo(Connection con, BookInfoDTO bookInfoDTO) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(INSERT_BOOKINFO)) {
             // Bind DTO fields to SQL parameters.
             ps.setString(1, bookInfoDTO.getCondition());
             ps.setInt(2, bookInfoDTO.getStatus());
             ps.setString(3, bookInfoDTO.getBookISBN());
             ps.executeUpdate();
-        }catch (SQLException | IOException e){
-            throw new RuntimeException("addBookInfo() failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Updates a book copy using an existing transaction connection.
+     */
+    @Override
+    public void updateBookInfo(Connection con, BookInfoDTO bookInfoDTO) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(UPDATE_BOOKINFO)) {
+            ps.setString(1, bookInfoDTO.getCondition());
+            ps.setInt(2, bookInfoDTO.getStatus());
+            ps.setInt(3, bookInfoDTO.getBookID());
+            ps.executeUpdate();
         }
     }
 
@@ -87,6 +122,17 @@ public class BookInfoDAOImpl implements BookInfoDAO {
             ps.executeUpdate();
         }catch (SQLException | IOException e){
             throw new RuntimeException("deleteBookInfo() failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Deletes a book copy using an existing transaction connection.
+     */
+    @Override
+    public void deleteBookInfo(Connection con, int bookID) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(DELETE_BOOKINFO)) {
+            ps.setInt(1, bookID);
+            ps.executeUpdate();
         }
     }
 

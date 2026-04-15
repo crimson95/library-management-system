@@ -1,17 +1,21 @@
 package service.book;
 
+import DAO.DataSource;
 import DAO.book.*;
 import DTO.book.*;
 import service.BusinessValidationException;
 
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Business layer for book-related operations.
+ * Service class handling core business logic for book-related operations.
  * <p>
- * This layer validates input before delegating to DAO.
- * It also coordinates related lookup DAOs (author/publisher)
- * used by admin form pages.
+ * This layer coordinates multiple DAOs and manages manual database transactions
+ * to ensure data integrity across the library system.
+ * </p>
  */
 public class BookService {
     /** Data access dependency for book persistence/query operations. */
@@ -94,37 +98,38 @@ public class BookService {
     }
 
     /**
-     * Creates a new book title record.
+     * Persists a new book entry and its initial physical copy into the system.
+     * <p>
+     * This operation is protected by a manual database transaction (ACID compliant).
+     * It ensures that either both the catalog record and the inventory record are
+     * saved (Commit), or neither are (Rollback), preventing orphaned data.
+     * </p>
      *
-     * @param bookDTO new book payload
-     * @throws BusinessValidationException when required fields are invalid
+     * @param bookDTO The BookDTO object containing the new book's metadata.
+     * @throws BusinessValidationException If validation fails (e.g., empty title, duplicate ISBN)
+     * or if a database error occurs during the transaction, triggering a rollback.
      */
     public void addBook(BookDTO bookDTO) throws BusinessValidationException {
-        // Validate required fields before insert.
-        if (bookDTO == null) {
-            throw new BusinessValidationException("Book cannot be null.");
-        }
-        if (bookDTO.getIsbn() == null || bookDTO.getIsbn().trim().isEmpty()) {
-            throw new BusinessValidationException("ISBN cannot be blank.");
-        }
-        if (bookDTO.getTitle() == null || bookDTO.getTitle().trim().isEmpty()) {
-            throw new BusinessValidationException("Title cannot be blank.");
-        }
-        if (bookDTO.getDateAcquired() == null) {
-            throw new BusinessValidationException("Date acquired is required.");
-        }
-        if (bookDTO.getAuthorID() <= 0) {
-            throw new BusinessValidationException("Author is required.");
-        }
-        if (bookDTO.getPublisherID() <= 0) {
-            throw new BusinessValidationException("Publisher is required.");
-        }
-        // Persist after validation passes.
-        bookDAO.addBook(bookDTO);
+        validateNewBook(bookDTO);
 
-        BookInfoDTO firstCopy = new BookInfoDTO(0, "New", BookInfoDTO.STATUS_AVAILABLE, bookDTO.getIsbn());
+        if (bookDAO.findByISBN(bookDTO.getIsbn().trim()) != null) {
+            throw new BusinessValidationException("ISBN already exists.");
+        }
 
-        bookInfoDAO.addBookInfo(firstCopy);
+        Connection con = null;
+        try {
+            con = DataSource.INSTANCE.getConnection();
+            con.setAutoCommit(false);
+            bookDAO.addBook(con, bookDTO);
+            BookInfoDTO firstCopy = new BookInfoDTO(0, "New", BookInfoDTO.STATUS_AVAILABLE, bookDTO.getIsbn());
+            bookInfoDAO.addBookInfo(con, firstCopy);
+            con.commit();
+        } catch (SQLException | IOException e) {
+            rollbackQuietly(con);
+            throw new BusinessValidationException("System error: Could not add book. Change rolled back.");
+        } finally {
+            closeTransactionConnection(con);
+        }
     }
 
     /**
@@ -184,19 +189,34 @@ public class BookService {
             throw new BusinessValidationException("ISBN cannot be blank.");
         }
 
-        List<BookInfoDTO> copies = bookInfoDAO.getBookInfoByISBN(isbn.trim());
+        String normalizedIsbn = isbn.trim();
+        List<BookInfoDTO> copies = bookInfoDAO.getBookInfoByISBN(normalizedIsbn);
+        if (bookDAO.findByISBN(normalizedIsbn) == null) {
+            throw new BusinessValidationException("Book Not Found.");
+        }
+
         for (BookInfoDTO copy : copies) {
             if(copy.getStatus() == BookInfoDTO.STATUS_BORROWED){
                 throw new BusinessValidationException("Cannot delete: One or more copies are currently borrowed.");
             }
         }
 
-        // Delete book copies
-        for(BookInfoDTO copy : copies){
-            bookInfoDAO.deleteBookInfo(copy.getBookID());
+        Connection con = null;
+        try {
+            con = DataSource.INSTANCE.getConnection();
+            con.setAutoCommit(false);
+
+            for (BookInfoDTO copy : copies) {
+                bookInfoDAO.deleteBookInfo(con, copy.getBookID());
+            }
+            bookDAO.deleteBook(con, normalizedIsbn);
+            con.commit();
+        } catch (SQLException | IOException e) {
+            rollbackQuietly(con);
+            throw new BusinessValidationException("System error: Could not delete book. Change rolled back.");
+        } finally {
+            closeTransactionConnection(con);
         }
-        // Delete book catalog by ISBN key.
-        bookDAO.deleteBook(isbn.trim());
     }
 
     /**
@@ -390,10 +410,59 @@ public class BookService {
     }
 
     /**
+     * Validation rules specific to book creation.
+     */
+    private void validateNewBook(BookDTO bookDTO) throws BusinessValidationException {
+        validateBook(bookDTO, true);
+        if (bookDTO.getDateAcquired() == null) {
+            throw new BusinessValidationException("Date acquired is required.");
+        }
+        if (bookDTO.getAuthorID() <= 0) {
+            throw new BusinessValidationException("Author is required.");
+        }
+        if (bookDTO.getPublisherID() <= 0) {
+            throw new BusinessValidationException("Publisher is required.");
+        }
+    }
+
+    /**
      * Null-safe blank checker used by validation rules.
      */
     private boolean isBlank(String value){
         return value == null || value.trim().isEmpty();
+    }
+
+    /**
+     * Best-effort rollback helper for transaction failures.
+     */
+    private void rollbackQuietly(Connection con) {
+        if (con == null) {
+            return;
+        }
+        try {
+            con.rollback();
+        } catch (SQLException ignored) {
+            // Preserve the original failure as the user-facing error.
+        }
+    }
+
+    /**
+     * Restores auto-commit and closes the connection after a manual transaction.
+     */
+    private void closeTransactionConnection(Connection con) {
+        if (con == null) {
+            return;
+        }
+        try {
+            con.setAutoCommit(true);
+        } catch (SQLException ignored) {
+            // Connection is closing anyway.
+        }
+        try {
+            con.close();
+        } catch (SQLException ignored) {
+            // Nothing useful to do at this layer.
+        }
     }
 
     /**
@@ -420,12 +489,24 @@ public class BookService {
         // Map to exact BookUserDTO constructor: (bookUserID, startDate, returnDate, lateFee, username, bookID)
         BookUserDTO record = new BookUserDTO(0, startDate, null, java.math.BigDecimal.ZERO, username, bookID);
 
-        // 3. Action A: Insert the borrowing record into the database
-        bookUserDAO.addBookUser(record);
+        Connection con = null;
+        try {
+            con = DataSource.INSTANCE.getConnection();
+            con.setAutoCommit(false);
 
-        // 4. Action B: Update the physical book copy status to "Borrowed" (0)
-        book.setStatus(BookInfoDTO.STATUS_BORROWED);
-        bookInfoDAO.updateBookInfo(book);
+            // 3. Action A: Insert the borrowing record into the database
+            bookUserDAO.addBookUser(con, record);
+
+            // 4. Action B: Update the physical book copy status to "Borrowed" (0)
+            book.setStatus(BookInfoDTO.STATUS_BORROWED);
+            bookInfoDAO.updateBookInfo(con, book);
+            con.commit();
+        } catch (SQLException | IOException e) {
+            rollbackQuietly(con);
+            throw new BusinessValidationException("System error: Could not borrow book. Change rolled back.");
+        } finally {
+            closeTransactionConnection(con);
+        }
     }
 
     /**
@@ -463,14 +544,26 @@ public class BookService {
         }
         record.setLateFee(lateFee);
 
-        // 4. Update the borrowing record in the database
-        bookUserDAO.updateBookUser(record);
-
-        // 5. Find the physical book copy and update its status back to "Available" (1)
+        // 4. Find the physical book copy and update both records in one transaction
         BookInfoDTO book = bookInfoDAO.getBookInfoByID(record.getBookID());
-        if(book != null){
+        if (book == null) {
+            throw new BusinessValidationException("Cannot find the physical book copy for this record.");
+        }
+
+        Connection con = null;
+        try {
+            con = DataSource.INSTANCE.getConnection();
+            con.setAutoCommit(false);
+
+            bookUserDAO.updateBookUser(con, record);
             book.setStatus(BookInfoDTO.STATUS_AVAILABLE);
-            bookInfoDAO.updateBookInfo(book);
+            bookInfoDAO.updateBookInfo(con, book);
+            con.commit();
+        } catch (SQLException | IOException e) {
+            rollbackQuietly(con);
+            throw new BusinessValidationException("System error: Could not return book. Change rolled back.");
+        } finally {
+            closeTransactionConnection(con);
         }
     }
 

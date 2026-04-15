@@ -2,6 +2,8 @@ package DAO.book;
 
 import DTO.book.BookUserDTO;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -16,11 +18,29 @@ public interface BookUserDAO {
     void addBookUser(BookUserDTO bookUserDTO);
 
     /**
+     * Inserts a new borrow record within an externally managed transaction.
+     *
+     * @param con active transaction connection
+     * @param bookUserDTO borrow record to insert
+     * @throws SQLException when insert fails
+     */
+    void addBookUser(Connection con, BookUserDTO bookUserDTO) throws SQLException;
+
+    /**
      * Updates a borrow record.
      *
      * @param bookUserDTO borrow record to update
      */
     void updateBookUser(BookUserDTO bookUserDTO);
+
+    /**
+     * Updates a borrow record within an externally managed transaction.
+     *
+     * @param con active transaction connection
+     * @param bookUserDTO borrow record to update
+     * @throws SQLException when update fails
+     */
+    void updateBookUser(Connection con, BookUserDTO bookUserDTO) throws SQLException;
 
     /**
      * Deletes a borrow record by id.
