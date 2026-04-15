@@ -177,7 +177,9 @@ public class UserService {
         if (isBlank(userDTO.getLastName())) {
             throw new BusinessValidationException("Last name is required");
         }
-        if (isBlank(userDTO.getEmail()) || !userDTO.getEmail().contains("@")) {
+        if (isBlank(userDTO.getEmail())) {
+            throw new BusinessValidationException("Email is required");
+        }else if (!userDTO.getEmail().contains("@")) {
             throw new BusinessValidationException("Email is invalid");
         }
         if (isBlank(userDTO.getPhone())) {

@@ -49,7 +49,10 @@
                     <label for="bookID">Physical Copy ID</label>
                     <input type="number" id="bookID" name="bookID" placeholder="enter bookID">
                 </div>
-                <button type="submit" class="btn btn-borrow">Process Checkout</button>
+                <div class="form-group" style="flex: 0 0 auto;">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn btn-borrow">Process Checkout</button>
+                </div>
             </div>
         </form>
     </div>

@@ -35,7 +35,7 @@
     <form method="post" action="${pageContext.request.contextPath}/register" accept-charset="UTF-8">
         <div class="row">
             <label for="username">Username: </label>
-            <input type="text" name="username" id="username" placeholder="your username" maxlength="20">
+            <input type="text" name="username" id="username" value="${param.username}" placeholder="your username" maxlength="20">
         </div>
         <div class="row">
             <label for="password">Password: </label>
@@ -43,19 +43,19 @@
         </div>
         <div class="row">
             <label for="first_name">First name: </label>
-            <input type="text" name="first_name" id="first_name" placeholder="your first name" maxlength="15">
+            <input type="text" name="first_name" id="first_name" value="${param.first_name}" placeholder="your first name" maxlength="15">
         </div>
         <div class="row">
             <label for="last_name">Last name: </label>
-            <input type="text" name="last_name" id="last_name" placeholder="your last name" maxlength="15">
-        </div>
-        <div class="row">
-            <label for="email">Email: </label>
-            <input type="text" name="email" id="email" placeholder="xxx@xxx.xxx" maxlength="50">
+            <input type="text" name="last_name" id="last_name" value="${param.last_name}" placeholder="your last name" maxlength="15">
         </div>
         <div class="row">
             <label for="phone">Phone: </label>
-            <input type="text" name="phone" id="phone" placeholder="(123)123-1234" maxlength="15">
+            <input type="text" name="phone" id="phone" value="${param.phone}" placeholder="(123)123-1234" maxlength="15">
+        </div>
+        <div class="row">
+            <label for="email">Email: </label>
+            <input type="text" name="email" id="email" value="${param.email}" placeholder="xxx@xxx.xxx" maxlength="50">
         </div>
 
         <div class="btn-row">

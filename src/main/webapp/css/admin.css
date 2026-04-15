@@ -61,8 +61,8 @@ table td:hover { background: #fdfdfd; }
 .btn-copy { background: #8e44ad; }
 .btn-delete { background: #c0392b; }
 .btn-search { background: #333; }
-.btn-borrow { background: #2980b9; height: 40px; }
-.btn-return { background: #27ae60; padding: 8px 15px; }
+.btn-borrow { background: #2980b9; }
+.btn-return { background: #27ae60; }
 .btn-secondary { background: #333; }
 
 /* Status Styles */
