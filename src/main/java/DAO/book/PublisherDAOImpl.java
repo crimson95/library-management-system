@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class PublisherDAOImpl implements PublisherDAO {
     /** Query for loading publisher options in alphabetical order. */
-    private static final String QUERY_ALL_PUBLISHERS = "SELECT * FROM Publisher ORDER BY publisher_name ASC";
+    private static final String QUERY_ALL_PUBLISHERS = "SELECT * FROM Publisher ORDER BY publisherID ASC";
     /** Single-publisher lookup query by primary key. */
     private static final String QUERY_PUBLISHER_BY_ID = "SELECT * FROM Publisher WHERE publisherID = ?";
     /** Insert query for a new publisher record. */
@@ -26,7 +26,7 @@ public class PublisherDAOImpl implements PublisherDAO {
     /** Delete query for a publisher record by primary key. */
     private static final String DELETE_PUBLISHER = "DELETE FROM Publisher WHERE publisherID =?";
     /** Query for searching publishers by name. */
-    private static final String SEARCH_PUBLISHERS = "SELECT * FROM Publisher WHERE LOWER(publisher_name) LIKE ? OR ORDER BY publisher_name ASC";
+    private static final String SEARCH_PUBLISHERS = "SELECT * FROM Publisher WHERE LOWER(publisher_name) LIKE ? ORDER BY publisherID ASC";
 
     /**
      * Gets a JDBC connection from shared data source.

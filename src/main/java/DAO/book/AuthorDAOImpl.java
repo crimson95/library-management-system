@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class AuthorDAOImpl implements AuthorDAO{
     /** Query for loading all author records used by dropdown/list screens. */
-    private static final String QUERY_ALL_AUTHORS = "SELECT * FROM Author ORDER BY first_name ASC";
+    private static final String QUERY_ALL_AUTHORS = "SELECT * FROM Author ORDER BY authorID ASC";
     /** Single-author lookup query by primary key. */
     private static final String QUERY_AUTHOR_BY_ID = "SELECT * FROM Author WHERE authorID = ?";
     /** Insert query for a new author record. */
@@ -26,7 +26,7 @@ public class AuthorDAOImpl implements AuthorDAO{
     /** Delete query for an author record by primary key. */
     private static final String DELETE_AUTHOR = "DELETE FROM Author WHERE authorID = ?";
     /** Query for searching authors by first or last name. */
-    private static final String SEARCH_AUTHORS = "SELECT * FROM Author WHERE LOWER(first_name) LIKE ? OR LOWER(last_name) LIKE ? ORDER BY first_name ASC";
+    private static final String SEARCH_AUTHORS = "SELECT * FROM Author WHERE LOWER(first_name) LIKE ? OR LOWER(last_name) LIKE ? ORDER BY authorID ASC";
 
     /**
      * Gets a JDBC connection from shared data source.
