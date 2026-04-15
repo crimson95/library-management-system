@@ -41,6 +41,26 @@ public class BookService {
     }
 
     /**
+     * Creates service with injected dependencies for testing or custom wiring.
+     */
+    public BookService(
+        BookDAO bookDAO,
+        AuthorDAO authorDAO,
+        PublisherDAO publisherDAO,
+        BookInfoDAO bookInfoDAO,
+        BookUserDAO bookUserDAO
+    ) {
+        if (bookDAO == null || authorDAO == null || publisherDAO == null || bookInfoDAO == null || bookUserDAO == null) {
+            throw new IllegalArgumentException("BookService dependencies cannot be null.");
+        }
+        this.bookDAO = bookDAO;
+        this.authorDAO = authorDAO;
+        this.publisherDAO = publisherDAO;
+        this.bookInfoDAO = bookInfoDAO;
+        this.bookUserDAO = bookUserDAO;
+    }
+
+    /**
      * Returns all books for admin list page.
      *
      * @return list of books
@@ -118,7 +138,7 @@ public class BookService {
 
         Connection con = null;
         try {
-            con = DataSource.INSTANCE.getConnection();
+            con = openConnection();
             con.setAutoCommit(false);
             bookDAO.addBook(con, bookDTO);
             BookInfoDTO firstCopy = new BookInfoDTO(0, "New", BookInfoDTO.STATUS_AVAILABLE, bookDTO.getIsbn());
@@ -203,7 +223,7 @@ public class BookService {
 
         Connection con = null;
         try {
-            con = DataSource.INSTANCE.getConnection();
+            con = openConnection();
             con.setAutoCommit(false);
 
             for (BookInfoDTO copy : copies) {
@@ -433,6 +453,13 @@ public class BookService {
     }
 
     /**
+     * Opens a JDBC connection. Extracted for test overrides.
+     */
+    protected Connection openConnection() throws SQLException, IOException {
+        return DataSource.INSTANCE.getConnection();
+    }
+
+    /**
      * Best-effort rollback helper for transaction failures.
      */
     private void rollbackQuietly(Connection con) {
@@ -491,7 +518,7 @@ public class BookService {
 
         Connection con = null;
         try {
-            con = DataSource.INSTANCE.getConnection();
+            con = openConnection();
             con.setAutoCommit(false);
 
             // 3. Action A: Insert the borrowing record into the database
@@ -552,7 +579,7 @@ public class BookService {
 
         Connection con = null;
         try {
-            con = DataSource.INSTANCE.getConnection();
+            con = openConnection();
             con.setAutoCommit(false);
 
             bookUserDAO.updateBookUser(con, record);

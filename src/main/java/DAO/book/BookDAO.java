@@ -13,6 +13,13 @@ import java.util.List;
  */
 public interface BookDAO {
     /**
+     * Adds a new book using its own connection lifecycle.
+     *
+     * @param bookDTO The BookDTO object containing the new book's details.
+     */
+    void addBook(BookDTO bookDTO);
+
+    /**
      * Adds a new book to the database within an externally managed transaction.
      * @param con The database connection provided by the Service layer.
      * WARNING: Do NOT call con.close() within this method.

@@ -25,6 +25,16 @@ public class AuthService {
     }
 
     /**
+     * Creates authentication service with injected user service.
+     */
+    public AuthService(UserService userService) {
+        if (userService == null) {
+            throw new IllegalArgumentException("userService cannot be null.");
+        }
+        this.userService = userService;
+    }
+
+    /**
      * Registers a new user after validation.
      *
      * @param userDTO user to register

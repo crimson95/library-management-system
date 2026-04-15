@@ -82,6 +82,18 @@ public class BookDAOImpl implements BookDAO{
     }
 
     /**
+     * Adds a new book record using a standalone connection.
+     */
+    @Override
+    public void addBook(BookDTO bookDTO) {
+        try (Connection con = getConnection()) {
+            addBook(con, bookDTO);
+        } catch (SQLException | IOException e) {
+            throw new RuntimeException("addBook() failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * Adds a new book record to the database using an existing transaction connection.
      * <p>
      * This method is part of a larger transaction managed by the Service layer.

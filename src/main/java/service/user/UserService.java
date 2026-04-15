@@ -28,6 +28,16 @@ public class UserService {
     }
 
     /**
+     * Creates service with injected DAO for testing or custom wiring.
+     */
+    public UserService(UserDAO userDAO) {
+        if (userDAO == null) {
+            throw new IllegalArgumentException("userDAO cannot be null.");
+        }
+        this.userDAO = userDAO;
+    }
+
+    /**
      * Returns all users.
      *
      * @return list of users
