@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: cchao
-  Date: 2026-04-02
-  Time: 14:23
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="DTO.book.BookUserDTO" %>

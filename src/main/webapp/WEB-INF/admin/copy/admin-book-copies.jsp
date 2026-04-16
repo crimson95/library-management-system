@@ -1,13 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: cchao
-  Date: 2026-03-23
-  Time: 15:40
-  To change this template use File | Settings | File Templates.
-
-  Description: Admin dashboard view for managing copies of a specific book.
-  Displays a list of all physical copies with their current condition and status.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="DTO.book.BookDTO" %>

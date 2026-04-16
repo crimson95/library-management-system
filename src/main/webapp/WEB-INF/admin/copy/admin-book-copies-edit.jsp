@@ -1,13 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: cchao
-  Date: 2026-03-26
-  Time: 12:33
-  To change this template use File | Settings | File Templates.
-
-  Description: Admin form view for editing an existing book copy.
-  Allows changing the condition and status of a specific physical copy.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="DTO.book.BookDTO" %>
 <%@ page import="DTO.book.BookInfoDTO" %>
