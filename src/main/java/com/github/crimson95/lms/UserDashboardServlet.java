@@ -1,4 +1,4 @@
-package com.example.lms;
+package com.github.crimson95.lms;
 
 import DTO.book.BookDTO;
 import jakarta.servlet.ServletException;

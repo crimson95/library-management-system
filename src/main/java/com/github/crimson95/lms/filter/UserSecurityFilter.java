@@ -1,4 +1,4 @@
-package com.example.lms.filter;
+package com.github.crimson95.lms.filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;

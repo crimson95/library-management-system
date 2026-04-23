@@ -1,4 +1,4 @@
-package com.example.lms.book;
+package com.github.crimson95.lms.book;
 
 import DTO.book.BookDTO;
 import DTO.book.BookInfoDTO;

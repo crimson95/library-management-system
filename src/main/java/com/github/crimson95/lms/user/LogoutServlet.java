@@ -1,4 +1,4 @@
-package com.example.lms.user;
+package com.github.crimson95.lms.user;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

@@ -1,4 +1,4 @@
-package com.example.lms.filter;
+package com.github.crimson95.lms.filter;
 
 import DTO.user.UserDTO;
 import jakarta.servlet.*;
